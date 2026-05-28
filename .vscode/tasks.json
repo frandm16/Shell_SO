@@ -1,0 +1,23 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Compilar Shell",
+            "type": "shell",
+            "command": "gcc",
+            "args": [
+                "Shell_project.c",
+                "job_control.c",
+                "-o",
+                "Shell",
+                "-g" // Incluye información de depuración
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "problemMatcher": ["$gcc"],
+            "detail": "Compila los archivos y crea el ejecutable Shell"
+        }
+    ]
+}
