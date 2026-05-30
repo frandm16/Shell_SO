@@ -15,6 +15,7 @@ To compile and run the program:
 **/
 
 #include "job_control.h"   // remember to compile with module job_control.c 
+#include <string.h>
 
 #define MAX_LINE 256 /* 256 chars per line, per command, should be enough. */
 
@@ -31,6 +32,12 @@ int main(void)
 	int pid_fork, pid_wait; 	/* pid for created and waited process */
 	int status;             	/* status returned by wait */
 	char *file_in, *file_out; 	/* file names for redirection */
+	pid_t shell_pgid;           /* process group id for the shell */
+	char *home_dir;             /* home directory for cd with no arguments */
+
+	shell_pgid = getpgrp();
+	home_dir = getenv("HOME");
+	ignore_terminal_signals();
 
 	while (1)   /* Program terminates normally inside get_command() after ^D is typed*/
 	{   		
@@ -39,6 +46,22 @@ int main(void)
 		get_command(inputBuffer, MAX_LINE, args, &background);  /* get next command */
 		
 		if(args[0]==NULL) continue;   // if empty command
+
+		if (strcmp(args[0], "cd") == 0)
+		{
+			if (args[1] == NULL || strcmp(args[1], "~") == 0)
+			{
+				if (home_dir == NULL || chdir(home_dir) < 0)
+				{
+					perror("cd");
+				}
+			}
+			else if (chdir(args[1]) < 0)
+			{
+				perror("cd");
+			}
+			continue;
+		}
 
 		/* the steps are:
 			 (1) fork a child process using fork()
@@ -57,10 +80,18 @@ int main(void)
 
 		if (pid_fork == 0)
 		{
+			setpgid(0, 0);
+			if (!background)
+			{
+				tcsetpgrp(STDIN_FILENO, getpid());
+			}
+			restore_terminal_signals();
 			execvp(args[0], args);
 			fprintf(stderr, "Error, command not found: %s\n", args[0]);
 			exit(255);
 		}
+
+		setpgid(pid_fork, pid_fork);
 
 		if (background)
 		{
@@ -68,7 +99,9 @@ int main(void)
 			continue;
 		}
 
-		pid_wait = waitpid(pid_fork, &status, 0);
+		tcsetpgrp(STDIN_FILENO, pid_fork);
+		pid_wait = waitpid(pid_fork, &status, WUNTRACED);
+		tcsetpgrp(STDIN_FILENO, shell_pgid);
 		if (pid_wait < 0)
 		{
 			perror("waitpid");
@@ -84,6 +117,11 @@ int main(void)
 		{
 			printf("Foreground pid: %d, command: %s, Signaled, info: %d\n",
 				pid_wait, args[0], WTERMSIG(status));
+		}
+		else if (WIFSTOPPED(status))
+		{
+			printf("Foreground pid: %d, command: %s, Suspended, info: %d\n",
+				pid_wait, args[0], WSTOPSIG(status));
 		}
 
 	} // end while
