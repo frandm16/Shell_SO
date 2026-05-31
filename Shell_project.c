@@ -21,8 +21,40 @@ To compile and run the program:
 
 job *job_list;
 
+void manejador(int s) 
+{
+  job *job;
+  int status;
+  int pid_wait;
+
+  for (int i = 1; i <= list_size(job_list); i++) 
+  {
+    job = get_item_bypos(job_list, i);
+    pid_wait = waitpid(job->pgid, &status, WNOHANG | WUNTRACED);
+
+    if (pid_wait == job->pgid) 
+    {
+      if (WIFEXITED(status)) 
+      {
+        printf("Background pid: %d, command: %s, Exited, info: %d\n", job->pgid, job->command, WEXITSTATUS(status));
+        delete_job(job_list, job);
+        i--;
+      } else if (WIFSIGNALED(status)) 
+      {
+        printf("Background pid: %d, command: %s, Signaled, info: %d\n", job->pgid, job->command, WTERMSIG(status));
+        delete_job(job_list, job);
+        i--;
+      } else if (WIFSTOPPED(status)) 
+      {
+        job->state = STOPPED;
+        printf("Background pid: %d, command: %s, Suspended, info: %d\n", job->pgid, job->command, WSTOPSIG(status));
+      }
+    }
+  }
+}
+
 // -----------------------------------------------------------------------
-//                            MAIN          
+//                            MAIN
 // -----------------------------------------------------------------------
 
 int main(void)
@@ -39,6 +71,7 @@ int main(void)
 	job_list = new_list("jobs list");
 
 	ignore_terminal_signals();
+  signal(SIGCHLD, manejador);
 
 	while (1)   /* Program terminates normally inside get_command() after ^D is typed*/
 	{   		
@@ -65,7 +98,9 @@ int main(void)
 
 		if (strcmp(args[0], "jobs") == 0) // comando jobs
 		{
+      block_SIGCHLD();
 			print_job_list(job_list);
+      unblock_SIGCHLD();
 			continue;
 		}
 
@@ -90,15 +125,10 @@ int main(void)
 		if (pid_fork == 0) // child process
 		{
 			setpgid(0, getpid());
-			if (!background)
-			{
-				tcsetpgrp(STDIN_FILENO, getpgrp());
-			}
-
-			restore_terminal_signals();
-			execvp(args[0], args);
-			fprintf(stderr, "Error, command not found: %s\n", args[0]);
-			exit(255);
+      restore_terminal_signals();
+      execvp(args[0], args);
+      fprintf(stderr, "Error, command not found: %s\n", args[0]);
+      exit(255);
 		}
 
 		setpgid(pid_fork, pid_fork);
@@ -113,7 +143,10 @@ int main(void)
 
 			if (WIFSTOPPED(status))
 			{
+        block_SIGCHLD();
 				add_job(job_list, new_job(pid_fork, args[0], STOPPED));
+        unblock_SIGCHLD();
+
 				printf("Foreground pid: %d, command: %s, Suspended, info: %d\n", pid_wait, args[0], WSTOPSIG(status));
 			} else if (WIFEXITED(status)){
 				printf("Foreground pid: %d, command: %s, Exited, info: %d\n", pid_wait, args[0], WEXITSTATUS(status));
@@ -122,9 +155,12 @@ int main(void)
 			}
 		} else {
 			//background
+      block_SIGCHLD();
 			add_job(job_list, new_job(pid_fork, args[0], BACKGROUND));
+      unblock_SIGCHLD();
+
 			printf("Background job running... pid: %d, command: %s\n", pid_fork, args[0]);
 		}
 
-	} // end while
+  } // end while
 }
