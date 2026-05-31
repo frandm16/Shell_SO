@@ -36,18 +36,18 @@ void manejador(int s)
     {
       if (WIFEXITED(status)) 
       {
-        printf("Background pid: %d, command: %s, Exited, info: %d\n", job->pgid, job->command, WEXITSTATUS(status));
+		printf("Background process %s (%d) Exited\n", job->command, job->pgid);
         delete_job(job_list, job);
         i--;
       } else if (WIFSIGNALED(status)) 
       {
-        printf("Background pid: %d, command: %s, Signaled, info: %d\n", job->pgid, job->command, WTERMSIG(status));
+		printf("Background process %s (%d) Signaled\n", job->command, job->pgid);
         delete_job(job_list, job);
         i--;
       } else if (WIFSTOPPED(status)) 
       {
         job->state = STOPPED;
-        printf("Background pid: %d, command: %s, Suspended, info: %d\n", job->pgid, job->command, WSTOPSIG(status));
+		printf("Background process %s (%d) Suspended\n", job->command, job->pgid);
       }
     }
   }
