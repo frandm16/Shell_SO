@@ -48,7 +48,7 @@ int main(void)
 		
 		if(args[0]==NULL) continue;   // if empty command
 
-		if (strcmp(args[0], "cd") == 0)
+		if (strcmp(args[0], "cd") == 0) // comando cd
 		{
 			if (args[1] == NULL || strcmp(args[1], "~") == 0)
 			{
@@ -60,6 +60,13 @@ int main(void)
 			{
 				perror("cd");
 			}
+			continue;
+		}
+
+		if (strcmp(args[0], "jobs") == 0) // comando jobs
+		{
+			print_job_list(job_list);
+			continue;
 		}
 
 		/* the steps are:
@@ -69,6 +76,8 @@ int main(void)
 			 (4) Shell shows a status message for processed command 
 			 (5) loop returns to get_commnad() function
 		*/
+
+		// (1) fork a child process using fork()
 		pid_fork = fork();
 
 		if (pid_fork < 0)
@@ -77,13 +86,15 @@ int main(void)
 			continue;
 		}
 
-		if (pid_fork == 0)
+		// (2) the child process will invoke execvp()
+		if (pid_fork == 0) // child process
 		{
-			setpgid(0, 0);
+			setpgid(0, getpid());
 			if (!background)
 			{
-				tcsetpgrp(STDIN_FILENO, getpid());
+				tcsetpgrp(STDIN_FILENO, getpgrp());
 			}
+
 			restore_terminal_signals();
 			execvp(args[0], args);
 			fprintf(stderr, "Error, command not found: %s\n", args[0]);
@@ -92,36 +103,27 @@ int main(void)
 
 		setpgid(pid_fork, pid_fork);
 
-		if (background)
+		// (3) if background == 0, the parent will wait, otherwise continue 
+		// (4) Shell shows a status message for processed command 
+		if (background == 0)
 		{
+			// foreground
+			pid_wait = waitpid(pid_fork, &status, WUNTRACED);
+			tcsetpgrp(STDIN_FILENO, getpgrp());
+
+			if (WIFSTOPPED(status))
+			{
+				add_job(job_list, new_job(pid_fork, args[0], STOPPED));
+				printf("Foreground pid: %d, command: %s, Suspended, info: %d\n", pid_wait, args[0], WSTOPSIG(status));
+			} else if (WIFEXITED(status)){
+				printf("Foreground pid: %d, command: %s, Exited, info: %d\n", pid_wait, args[0], WEXITSTATUS(status));
+			} else if (WIFSIGNALED(status)){
+				printf("Foreground pid: %d, command: %s, Signaled, info: %d\n", pid_wait, args[0], WTERMSIG(status));
+			}
+		} else {
+			//background
+			add_job(job_list, new_job(pid_fork, args[0], BACKGROUND));
 			printf("Background job running... pid: %d, command: %s\n", pid_fork, args[0]);
-			continue;
-		}
-
-		tcsetpgrp(STDIN_FILENO, pid_fork);
-		pid_wait = waitpid(pid_fork, &status, WUNTRACED);
-		tcsetpgrp(STDIN_FILENO, getpgrp());
-		if (pid_wait < 0)
-		{
-			perror("waitpid");
-			continue;
-		}
-
-		if (WIFEXITED(status))
-		{
-			printf("Foreground pid: %d, command: %s, Exited, info: %d\n",
-				pid_wait, args[0], WEXITSTATUS(status));
-		}
-		else if (WIFSIGNALED(status))
-		{
-			printf("Foreground pid: %d, command: %s, Signaled, info: %d\n",
-				pid_wait, args[0], WTERMSIG(status));
-		}
-		else if (WIFSTOPPED(status))
-		{
-			printf("Foreground pid: %d, command: %s, Suspended, info: %d\n",
-				pid_wait, args[0], WSTOPSIG(status));
-			//add_job(job_list, new_job(get_pid, get_command, STOPPED))
 		}
 
 	} // end while
