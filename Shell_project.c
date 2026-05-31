@@ -19,6 +19,8 @@ To compile and run the program:
 
 #define MAX_LINE 256 /* 256 chars per line, per command, should be enough. */
 
+job *job_list;
+
 // -----------------------------------------------------------------------
 //                            MAIN          
 // -----------------------------------------------------------------------
@@ -33,7 +35,8 @@ int main(void)
 	int status;             	/* status returned by wait */
 	char *file_in, *file_out; 	/* file names for redirection */
 
-	char *home_dir = getenv("HOME");
+	const char *home_dir = getenv("HOME");
+	job_list = new_list("jobs list");
 
 	ignore_terminal_signals();
 
@@ -118,6 +121,7 @@ int main(void)
 		{
 			printf("Foreground pid: %d, command: %s, Suspended, info: %d\n",
 				pid_wait, args[0], WSTOPSIG(status));
+			//add_job(job_list, new_job(get_pid, get_command, STOPPED))
 		}
 
 	} // end while
