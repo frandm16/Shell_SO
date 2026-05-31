@@ -32,11 +32,9 @@ int main(void)
 	int pid_fork, pid_wait; 	/* pid for created and waited process */
 	int status;             	/* status returned by wait */
 	char *file_in, *file_out; 	/* file names for redirection */
-	pid_t shell_pgid;           /* process group id for the shell */
-	char *home_dir;             /* home directory for cd with no arguments */
 
-	shell_pgid = getpgrp();
-	home_dir = getenv("HOME");
+	char *home_dir = getenv("HOME");
+
 	ignore_terminal_signals();
 
 	while (1)   /* Program terminates normally inside get_command() after ^D is typed*/
@@ -51,16 +49,14 @@ int main(void)
 		{
 			if (args[1] == NULL || strcmp(args[1], "~") == 0)
 			{
-				if (home_dir == NULL || chdir(home_dir) < 0)
-				{
-					perror("cd");
-				}
+				chdir(home_dir);
+				continue;
 			}
-			else if (chdir(args[1]) < 0)
+
+			if (chdir(args[1]) != 0)
 			{
 				perror("cd");
 			}
-			continue;
 		}
 
 		/* the steps are:
@@ -101,7 +97,7 @@ int main(void)
 
 		tcsetpgrp(STDIN_FILENO, pid_fork);
 		pid_wait = waitpid(pid_fork, &status, WUNTRACED);
-		tcsetpgrp(STDIN_FILENO, shell_pgid);
+		tcsetpgrp(STDIN_FILENO, getpgrp());
 		if (pid_wait < 0)
 		{
 			perror("waitpid");
