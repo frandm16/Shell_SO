@@ -28,11 +28,11 @@ void traverse_proc(void) {
     DIR *d; 
     struct dirent *dir;
     char buff[2048];
-    d = opendir("/proc");
+    d = opendir("/proc"); // Abrir el directorio virtual de procesos
     if (d) {
         while ((dir = readdir(d)) != NULL) {
-            sprintf(buff, "/proc/%s/stat", dir->d_name); 
-            FILE *fd = fopen(buff, "r");
+            sprintf(buff, "/proc/%s/stat", dir->d_name); // Construir la ruta a stat
+            FILE *fd = fopen(buff, "r"); // Abrir la informacion del proceso
             if (fd){
                 long pid;     // pid
                 long ppid;    // ppid
@@ -56,10 +56,10 @@ int get_job_position(char *arg)
 {
 	if (arg == NULL)
 	{
-		return 1;
+		return 1; // Sin argumento, usar el job actual
 	}
 
-	return atoi(arg);
+	return atoi(arg); // Convertir el argumento a numero
 }
 
 // Maneja SIGHUP y SIGCHLD
@@ -81,12 +81,12 @@ void manejador(int s)
 
   for (int i = list_size(job_list); i >= 1; i--) 
   {
-    job = get_item_bypos(job_list, i);
+    job = get_item_bypos(job_list, i); // Obtener el job por posicion
     if (job == NULL)
     {
       continue;
     }
-    pid_wait = waitpid(job->pgid, &status, WNOHANG | WUNTRACED | WCONTINUED);
+    pid_wait = waitpid(job->pgid, &status, WNOHANG | WUNTRACED | WCONTINUED); // Consultar su estado sin bloquear
 
     if (pid_wait == job->pgid) 
     {
@@ -162,7 +162,7 @@ int main(void)
 		if (strcmp(args[0], "jobs") == 0) // comando jobs
 		{
       		block_SIGCHLD(); // Bloquear SIGCHLD para evitar que se maneje mientras se accede a la lista de trabajos
-			print_job_list(job_list);
+			print_job_list(job_list); // Mostrar jobs en background y parados
       		unblock_SIGCHLD(); // Desbloquear SIGCHLD para permitir de nuevo el manejo de la lista de trabajos
 			continue;
 		}
@@ -174,7 +174,7 @@ int main(void)
 			{
 				printf("No hay trabajo actual\n");
 			} else {
-				job *item = get_item_bypos(job_list, 1); // Obtener el primer trabajo
+				job *item = get_item_bypos(job_list, 1); // El job actual es el primero de la lista
 				printf("Trabajo actual: PID=%d command=%s\n", item->pgid, item->command);
 			}
 			unblock_SIGCHLD(); // Desbloquear SIGCHLD para permitir de nuevo el manejo de la lista de trabajos
@@ -190,11 +190,12 @@ int main(void)
 				printf("No hay trabajo actual\n");
 
 			} else {
-				job *item = get_item_bypos(job_list, 1);
+				job *item = get_item_bypos(job_list, 1); // El trabajo actual es el primero de la lista
 				if (item->state == STOPPED)
 				{
 					printf("No se permiten borrar trabajos en segundo plano suspendidos\n");
 				} else {
+					// Solo se borra de la lista, el proceso sigue ejecutandose
 					printf("Borrando trabajo actual de la lista de jobs: PID=%d command=%s\n", item->pgid, item->command);
 					delete_job(job_list, item);
 				}
@@ -206,7 +207,7 @@ int main(void)
 
 		if (strcmp(args[0], "zjobs") == 0) // comando zjobs
 		{
-			traverse_proc();
+			traverse_proc(); // Listar zombis creados por el shell
 			continue;
 		}
 
@@ -224,9 +225,9 @@ int main(void)
 				unblock_SIGCHLD(); // Desbloquear SIGCHLD para permitir de nuevo el manejo de la lista de trabajos
 				continue;
 			}
-			job_pid = item->pgid;
-			job_command = strdup(item->command);
-			delete_job(job_list, item);
+			job_pid = item->pgid; // Guardar el pid del job
+			job_command = strdup(item->command); // Copiar el nombre por si se borra de la lista
+			delete_job(job_list, item); // Sacarlo de la lista antes de pasarlo a foreground
 			unblock_SIGCHLD(); // Desbloquear SIGCHLD para permitir de nuevo el manejo de la lista de trabajos
 
 			tcsetpgrp(STDIN_FILENO, job_pid); // Dar el terminal al job
@@ -237,7 +238,7 @@ int main(void)
 			if (WIFSTOPPED(status))
 			{
 				block_SIGCHLD(); // Bloquear SIGCHLD para evitar que se maneje mientras se modifica la lista de trabajos
-				add_job(job_list, new_job(job_pid, job_command, STOPPED));
+				add_job(job_list, new_job(job_pid, job_command, STOPPED)); // Si se para, vuelve a la lista
 				unblock_SIGCHLD(); // Desbloquear SIGCHLD para permitir de nuevo el manejo de la lista de trabajos
 
 				printf("Foreground pid: %d, command: %s, Suspended, info: %d\n", job_pid, job_command, WSTOPSIG(status));
@@ -267,11 +268,100 @@ int main(void)
 				unblock_SIGCHLD(); // Desbloquear SIGCHLD para permitir de nuevo el manejo de la lista de trabajos
 				continue;
 			}
-			item->state = BACKGROUND;
+			item->state = BACKGROUND; // Actualizar el estado antes de continuar
 			unblock_SIGCHLD(); // Desbloquear SIGCHLD para permitir de nuevo el manejo de la lista de trabajos
 
 			killpg(item->pgid, SIGCONT); // Reanudar el job en background
 			printf("Background job running... pid: %d, command: %s\n", item->pgid, item->command);
+			continue;
+		}
+
+		if (strcmp(args[0], "bgteam") == 0) // comando bgteam
+		{
+			int n;
+			int i;
+
+			if (args[1] == NULL || args[2] == NULL)
+			{
+				printf("El comando bgteam requiere dos argumentos\n");
+				continue;
+			}
+
+			n = atoi(args[1]); // Numero de instancias a lanzar
+			if (n <= 0)
+			{
+				continue;
+			}
+
+			i = 0;
+			while (args[i + 2] != NULL)
+			{
+				args[i] = args[i + 2]; // Desplazar el comando y sus argumentos al inicio
+				i++;
+			}
+			args[i] = NULL; // Terminar el array de argumentos
+
+			for (int i = 0; i < n; i++)
+			{
+				pid_fork = fork(); // Crear una nueva instancia del comando
+
+				if (pid_fork < 0)
+				{
+					perror("fork");
+					continue;
+				}
+
+				if (pid_fork == 0)
+				{
+					setpgid(0, getpid()); // Crear un nuevo grupo de procesos para el hijo
+
+					if (file_in)
+					{
+						FILE* file = fopen(file_in, "r"); // Abrir la redireccion de entrada
+						if (file == NULL)
+						{
+							fprintf(stderr, "Error: abriendo: %s\n", file_in);
+							exit(255);
+						}
+						if (dup2(fileno(file), STDIN_FILENO) < 0)
+						{
+							fprintf(stderr, "Error: redireccionando entrada\n");
+							fclose(file);
+							exit(255);
+						}
+						fclose(file);
+					}
+
+					if (file_out)
+					{
+						FILE* file = fopen(file_out, "w"); // Abrir la redireccion de salida
+						if (file == NULL)
+						{
+							fprintf(stderr, "Error: abriendo: %s\n", file_out);
+							exit(255);
+						}
+						if (dup2(fileno(file), STDOUT_FILENO) < 0)
+						{
+							fprintf(stderr, "Error: redireccionando salida\n");
+							fclose(file);
+							exit(255);
+						}
+						fclose(file);
+					}
+
+					restore_terminal_signals(); // Restaurar senales por defecto en el hijo
+					execvp(args[0], args); // Ejecutar el comando externo
+					fprintf(stderr, "Error, command not found: %s\n", args[0]);
+					exit(255);
+				}
+
+				setpgid(pid_fork, pid_fork); // Asegurar el grupo de procesos del hijo
+				block_SIGCHLD(); // Bloquear SIGCHLD para evitar que se maneje mientras se modifica la lista de trabajos
+				add_job(job_list, new_job(pid_fork, args[0], BACKGROUND)); // Registrar el job en background
+				unblock_SIGCHLD(); // Desbloquear SIGCHLD para permitir de nuevo el manejo de la lista de trabajos
+				printf("Background job running... pid: %d, command: %s\n", pid_fork, args[0]); // Informar del nuevo job
+			}
+
 			continue;
 		}
 
@@ -302,7 +392,7 @@ int main(void)
 
 			if (file_in)
 			{
-				FILE* file = fopen(file_in, "r");
+				FILE* file = fopen(file_in, "r"); // Abrir la entrada redirigida
 				if (file == NULL)
 				{
 					fprintf(stderr, "Error: abriendo: %s\n", file_in);
@@ -319,7 +409,7 @@ int main(void)
 
 			if (file_out)
 			{
-				FILE* file = fopen(file_out, "w");
+				FILE* file = fopen(file_out, "w"); // Abrir la salida redirigida
 				if (file == NULL)
 				{
 					fprintf(stderr, "Error: abriendo: %s\n", file_out);
@@ -366,7 +456,7 @@ int main(void)
 		} else {
 			//background
       		block_SIGCHLD(); // Bloquear SIGCHLD para evitar que se maneje mientras se modifica la lista de trabajos
-			add_job(job_list, new_job(pid_fork, args[0], BACKGROUND));
+			add_job(job_list, new_job(pid_fork, args[0], BACKGROUND)); // Registrar el job en la lista
       		unblock_SIGCHLD(); // Desbloquear SIGCHLD para permitir de nuevo el manejo de la lista de trabajos
 
 			printf("Background job running... pid: %d, command: %s\n", pid_fork, args[0]); // Informar del nuevo job
