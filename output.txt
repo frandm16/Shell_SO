@@ -1,0 +1,896 @@
+Starting SIMULATION:
+
+============== START ==============
+spawn sh
+$ export PS1="\$ "
+$ export LANG=C
+$ export DISPLAY=:99.99
+$
+$ exec ./a.out
+
+COMMAND->
+------------------
+.....
+b9a1930f63d7b99c461278cd550c485b
+b9a1930f63d7b99c461278cd550c485b
+checksum ok
+.....
+
+============== COMANDOS ERRONEOS ==============
+
+COMMAND->1858681.7368955730
+Error, command not found: 1858681.7368955730
+Foreground pid: 746754, command: 1858681.7368955730, Exited, info: 255
+COMMAND->1356927.1989060121
+Error, command not found: 1356927.1989060121
+Foreground pid: 746755, command: 1356927.1989060121, Exited, info: 255
+COMMAND->6252964.4807777912
+Error, command not found: 6252964.4807777912
+Foreground pid: 746756, command: 6252964.4807777912, Exited, info: 255
+COMMAND->228369.121794982383
+Error, command not found: 228369.121794982383
+Foreground pid: 746757, command: 228369.121794982383, Exited, info: 255
+COMMAND->|||_<>_|||
+Error, command not found: |||_<>_|||
+Foreground pid: 746758, command: |||_<>_|||, Exited, info: 255
+COMMAND->
+------------------
+
+
+
+------------------
+
+============== INVOCACION RECURSIVA ==============
+
+COMMAND->./a.out
+COMMAND->./a.out
+COMMAND->./a.out
+COMMAND->./a.out
+COMMAND->./a.out
+COMMAND->
+.... ps output ...
+SNs 746705 746697 user_40+ ./a.out
+SN 746778 746705 user_40+ ./a.out
+SN 746779 746778 user_40+ ./a.out
+SN 746797 746779 user_40+ ./a.out
+SN 746821 746797 user_40+ ./a.out
+SN+ 746851 746821 user_40+ ./a.out
+....
+
+
+Bye
+Foreground pid: 746851, command: ./a.out, Exited, info: 0
+COMMAND->COMMAND->
+
+Bye
+Foreground pid: 746821, command: ./a.out, Exited, info: 0
+COMMAND->COMMAND->
+
+Bye
+Foreground pid: 746797, command: ./a.out, Exited, info: 0
+COMMAND->COMMAND->
+
+Bye
+Foreground pid: 746779, command: ./a.out, Exited, info: 0
+COMMAND->COMMAND->
+
+Bye
+Foreground pid: 746778, command: ./a.out, Exited, info: 0
+COMMAND->
+
+
+============== LANZAMIENTO NORMAL (FG) y SEGUNDO PLANO (&) ==============
+
+COMMAND->
+COMMAND->ln -sf /bin/sleep /tmp/tmp.COOdjYfMwo/sl3ep_user_4054
+Foreground pid: 746957, command: ln, Exited, info: 0
+COMMAND->date
+Mon Jun 1 23:54:12 CEST 2026
+Foreground pid: 746958, command: date, Exited, info: 0
+COMMAND->whoami
+user_4054
+Foreground pid: 746959, command: whoami, Exited, info: 0
+COMMAND->/tmp/tmp.COOdjYfMwo/sl3ep_user_4054 1000 &
+Background job running... pid: 746960, command: /tmp/tmp.COOdjYfMwo/sl3ep_user_4054
+COMMAND->uname -p -io
+x86_64 x86_64 GNU/Linux
+Foreground pid: 746961, command: uname, Exited, info: 0
+COMMAND->/tmp/tmp.COOdjYfMwo/sl3ep_user_4054 1200 &
+Background job running... pid: 746962, command: /tmp/tmp.COOdjYfMwo/sl3ep_user_4054
+COMMAND->sleep .1
+uptime &
+/tmp/tmp.COOdjYfMwo/sl3ep_user_4054 1300 &
+Foreground pid: 746963, command: sleep, Exited, info: 0
+COMMAND->Background job running... pid: 746981, command: uptime
+COMMAND->Background job running... pid: 746982, command: /tmp/tmp.COOdjYfMwo/sl3ep_user_4054
+COMMAND-> 23:54:13 up 18:49, 3 users, load average: 0.56, 0.49, 0.38
+Background pid: 746981, command: uptime, Exited, info: 0
+xclock -bg yellow -update 1 &
+Background job running... pid: 746989, command: xclock
+COMMAND->Error: Can't open display: :99.99
+Background pid: 746989, command: xclock, Exited, info: 1
+date
+Mon Jun 1 23:54:13 CEST 2026
+Foreground pid: 746991, command: date, Exited, info: 0
+COMMAND->whoami
+user_4054
+Foreground pid: 746992, command: whoami, Exited, info: 0
+COMMAND->/tmp/tmp.COOdjYfMwo/sl3ep_user_4054 1000 &
+Background job running... pid: 747004, command: /tmp/tmp.COOdjYfMwo/sl3ep_user_4054
+COMMAND->uname -p -io
+x86_64 x86_64 GNU/Linux
+Foreground pid: 747010, command: uname, Exited, info: 0
+COMMAND->/tmp/tmp.COOdjYfMwo/sl3ep_user_4054 1200 &
+Background job running... pid: 747030, command: /tmp/tmp.COOdjYfMwo/sl3ep_user_4054
+COMMAND->sleep .1
+uptime &
+/tmp/tmp.COOdjYfMwo/sl3ep_user_4054 1300 &
+Foreground pid: 747034, command: sleep, Exited, info: 0
+COMMAND->Background job running... pid: 747042, command: uptime
+COMMAND->Background job running... pid: 747043, command: /tmp/tmp.COOdjYfMwo/sl3ep_user_4054
+COMMAND-> 23:54:13 up 18:49, 3 users, load average: 0.56, 0.49, 0.38
+Background pid: 747042, command: uptime, Exited, info: 0
+xclock -bg yellow -update 1 &
+Background job running... pid: 747063, command: xclock
+COMMAND->Error: Can't open display: :99.99
+Background pid: 747063, command: xclock, Exited, info: 1
+date
+Mon Jun 1 23:54:13 CEST 2026
+Foreground pid: 747064, command: date, Exited, info: 0
+COMMAND->whoami
+user_4054
+Foreground pid: 747065, command: whoami, Exited, info: 0
+COMMAND->/tmp/tmp.COOdjYfMwo/sl3ep_user_4054 1000 &
+Background job running... pid: 747066, command: /tmp/tmp.COOdjYfMwo/sl3ep_user_4054
+COMMAND->uname -p -io
+x86_64 x86_64 GNU/Linux
+Foreground pid: 747070, command: uname, Exited, info: 0
+COMMAND->/tmp/tmp.COOdjYfMwo/sl3ep_user_4054 1200 &
+Background job running... pid: 747071, command: /tmp/tmp.COOdjYfMwo/sl3ep_user_4054
+COMMAND->sleep .1
+uptime &
+/tmp/tmp.COOdjYfMwo/sl3ep_user_4054 1300 &
+Foreground pid: 747072, command: sleep, Exited, info: 0
+COMMAND->Background job running... pid: 747073, command: uptime
+COMMAND->Background job running... pid: 747074, command: /tmp/tmp.COOdjYfMwo/sl3ep_user_4054
+COMMAND-> 23:54:13 up 18:49, 3 users, load average: 0.56, 0.49, 0.38
+Background pid: 747073, command: uptime, Exited, info: 0
+xclock -bg yellow -update 1 &
+Background job running... pid: 747075, command: xclock
+COMMAND->Error: Can't open display: :99.99
+Background pid: 747075, command: xclock, Exited, info: 1
+COMMAND->
+.... ps output ...
+SN 746960 746705 user_40+ /tmp/tmp.COOdjYfMwo/sl3ep_user_4054 1000
+SN 746962 746705 user_40+ /tmp/tmp.COOdjYfMwo/sl3ep_user_4054 1200
+SN 746982 746705 user_40+ /tmp/tmp.COOdjYfMwo/sl3ep_user_4054 1300
+SN 747004 746705 user_40+ /tmp/tmp.COOdjYfMwo/sl3ep_user_4054 1000
+SN 747030 746705 user_40+ /tmp/tmp.COOdjYfMwo/sl3ep_user_4054 1200
+SN 747043 746705 user_40+ /tmp/tmp.COOdjYfMwo/sl3ep_user_4054 1300
+SN 747066 746705 user_40+ /tmp/tmp.COOdjYfMwo/sl3ep_user_4054 1000
+SN 747071 746705 user_40+ /tmp/tmp.COOdjYfMwo/sl3ep_user_4054 1200
+SN 747074 746705 user_40+ /tmp/tmp.COOdjYfMwo/sl3ep_user_4054 1300
+....
+killall -9 sl3ep_user_4054
+Background pid: 746960, command: /tmp/tmp.COOdjYfMwo/sl3ep_user_4054, Signaled, info: 9
+Background pid: 746982, command: /tmp/tmp.COOdjYfMwo/sl3ep_user_4054, Signaled, info: 9
+Background pid: 747043, command: /tmp/tmp.COOdjYfMwo/sl3ep_user_4054, Signaled, info: 9
+Background pid: 747074, command: /tmp/tmp.COOdjYfMwo/sl3ep_user_4054, Signaled, info: 9
+Foreground pid: 747105, command: killall, Exited, info: 0
+COMMAND->Background pid: 746962, command: /tmp/tmp.COOdjYfMwo/sl3ep_user_4054, Signaled, info: 9
+Background pid: 747004, command: /tmp/tmp.COOdjYfMwo/sl3ep_user_4054, Signaled, info: 9
+Background pid: 747030, command: /tmp/tmp.COOdjYfMwo/sl3ep_user_4054, Signaled, info: 9
+Background pid: 747066, command: /tmp/tmp.COOdjYfMwo/sl3ep_user_4054, Signaled, info: 9
+Background pid: 747071, command: /tmp/tmp.COOdjYfMwo/sl3ep_user_4054, Signaled, info: 9
+killall -9 xclock
+xclock: no process found
+Foreground pid: 747106, command: killall, Exited, info: 1
+COMMAND->killall -9 xeyes
+xeyes: no process found
+Foreground pid: 747107, command: killall, Exited, info: 1
+COMMAND->killall -9 xvfb-run
+xvfb-run: no process found
+Foreground pid: 747108, command: killall, Exited, info: 1
+COMMAND->
+.... ps output ...
+
+....
+
+------------------
+
+
+
+------------------
+
+============== PRUEBAS COMANDOS INTERNOS BG, FG ==============
+COMMAND->/tmp/tmp.COOdjYfMwo/sl3ep_user_4054 3000 1 &
+Background job running... pid: 747145, command: /tmp/tmp.COOdjYfMwo/sl3ep_user_4054
+COMMAND->/tmp/tmp.COOdjYfMwo/sl3ep_user_4054 3001 1 &
+Background job running... pid: 747146, command: /tmp/tmp.COOdjYfMwo/sl3ep_user_4054
+COMMAND->fg
+^Z
+Foreground pid: 747146, command: /tmp/tmp.COOdjYfMwo/sl3ep_user_4054, Suspended, info: 20
+COMMAND->COMMAND->/tmp/tmp.COOdjYfMwo/sl3ep_user_4054 3002 1
+^Z
+Foreground pid: 747147, command: /tmp/tmp.COOdjYfMwo/sl3ep_user_4054, Suspended, info: 20
+COMMAND->COMMAND->fg
+^C
+Foreground pid: 747147, command: /tmp/tmp.COOdjYfMwo/sl3ep_user_4054, Signaled, info: 2
+COMMAND->COMMAND->/tmp/tmp.COOdjYfMwo/sl3ep_user_4054 3003 1
+^Z
+Foreground pid: 747148, command: /tmp/tmp.COOdjYfMwo/sl3ep_user_4054, Suspended, info: 20
+COMMAND->COMMAND->bg
+Background job running... pid: 747148, command: /tmp/tmp.COOdjYfMwo/sl3ep_user_4054
+COMMAND->Background pid: 747148, command: /tmp/tmp.COOdjYfMwo/sl3ep_user_4054, Continued, info: 18
+fg 3
+^Z
+Foreground pid: 747145, command: /tmp/tmp.COOdjYfMwo/sl3ep_user_4054, Suspended, info: 20
+COMMAND->COMMAND->bg
+Background job running... pid: 747145, command: /tmp/tmp.COOdjYfMwo/sl3ep_user_4054
+COMMAND->Background pid: 747145, command: /tmp/tmp.COOdjYfMwo/sl3ep_user_4054, Continued, info: 18
+bg 3
+Background job running... pid: 747146, command: /tmp/tmp.COOdjYfMwo/sl3ep_user_4054
+COMMAND->Background pid: 747146, command: /tmp/tmp.COOdjYfMwo/sl3ep_user_4054, Continued, info: 18
+COMMAND->/tmp/tmp.COOdjYfMwo/sl3ep_user_4054 3000 2 &
+Background job running... pid: 747189, command: /tmp/tmp.COOdjYfMwo/sl3ep_user_4054
+COMMAND->/tmp/tmp.COOdjYfMwo/sl3ep_user_4054 3001 2 &
+Background job running... pid: 747191, command: /tmp/tmp.COOdjYfMwo/sl3ep_user_4054
+COMMAND->fg
+^Z
+Foreground pid: 747191, command: /tmp/tmp.COOdjYfMwo/sl3ep_user_4054, Suspended, info: 20
+COMMAND->COMMAND->/tmp/tmp.COOdjYfMwo/sl3ep_user_4054 3002 2
+^Z
+Foreground pid: 747195, command: /tmp/tmp.COOdjYfMwo/sl3ep_user_4054, Suspended, info: 20
+COMMAND->COMMAND->fg
+^C
+Foreground pid: 747195, command: /tmp/tmp.COOdjYfMwo/sl3ep_user_4054, Signaled, info: 2
+COMMAND->COMMAND->fg 1
+^Z
+Foreground pid: 747191, command: /tmp/tmp.COOdjYfMwo/sl3ep_user_4054, Suspended, info: 20
+COMMAND->COMMAND->bg
+Background job running... pid: 747191, command: /tmp/tmp.COOdjYfMwo/sl3ep_user_4054
+COMMAND->Background pid: 747191, command: /tmp/tmp.COOdjYfMwo/sl3ep_user_4054, Continued, info: 18
+bg 1
+Background job running... pid: 747191, command: /tmp/tmp.COOdjYfMwo/sl3ep_user_4054
+COMMAND->/tmp/tmp.COOdjYfMwo/sl3ep_user_4054 3000 3 &
+Background job running... pid: 747255, command: /tmp/tmp.COOdjYfMwo/sl3ep_user_4054
+COMMAND->/tmp/tmp.COOdjYfMwo/sl3ep_user_4054 3001 3 &
+Background job running... pid: 747258, command: /tmp/tmp.COOdjYfMwo/sl3ep_user_4054
+COMMAND->fg
+^Z
+Foreground pid: 747258, command: /tmp/tmp.COOdjYfMwo/sl3ep_user_4054, Suspended, info: 20
+COMMAND->COMMAND->/tmp/tmp.COOdjYfMwo/sl3ep_user_4054 3003 3
+^Z
+Foreground pid: 747265, command: /tmp/tmp.COOdjYfMwo/sl3ep_user_4054, Suspended, info: 20
+COMMAND->COMMAND->bg
+Background job running... pid: 747265, command: /tmp/tmp.COOdjYfMwo/sl3ep_user_4054
+COMMAND->Background pid: 747265, command: /tmp/tmp.COOdjYfMwo/sl3ep_user_4054, Continued, info: 18
+COMMAND->/tmp/tmp.COOdjYfMwo/sl3ep_user_4054 3000 4 &
+Background job running... pid: 747288, command: /tmp/tmp.COOdjYfMwo/sl3ep_user_4054
+COMMAND->/tmp/tmp.COOdjYfMwo/sl3ep_user_4054 3001 4 &
+Background job running... pid: 747293, command: /tmp/tmp.COOdjYfMwo/sl3ep_user_4054
+COMMAND->fg
+^Z
+Foreground pid: 747293, command: /tmp/tmp.COOdjYfMwo/sl3ep_user_4054, Suspended, info: 20
+COMMAND->COMMAND->/tmp/tmp.COOdjYfMwo/sl3ep_user_4054 3002 4
+^Z
+Foreground pid: 747298, command: /tmp/tmp.COOdjYfMwo/sl3ep_user_4054, Suspended, info: 20
+COMMAND->COMMAND->fg
+^C
+Foreground pid: 747298, command: /tmp/tmp.COOdjYfMwo/sl3ep_user_4054, Signaled, info: 2
+COMMAND->COMMAND->fg 9
+^Z
+Foreground pid: 747148, command: /tmp/tmp.COOdjYfMwo/sl3ep_user_4054, Suspended, info: 20
+COMMAND->COMMAND->bg
+Background job running... pid: 747148, command: /tmp/tmp.COOdjYfMwo/sl3ep_user_4054
+COMMAND->Background pid: 747148, command: /tmp/tmp.COOdjYfMwo/sl3ep_user_4054, Continued, info: 18
+bg 9
+Background job running... pid: 747145, command: /tmp/tmp.COOdjYfMwo/sl3ep_user_4054
+COMMAND->/tmp/tmp.COOdjYfMwo/sl3ep_user_4054 3002 5
+^Z
+Foreground pid: 747326, command: /tmp/tmp.COOdjYfMwo/sl3ep_user_4054, Suspended, info: 20
+COMMAND->COMMAND->fg
+^C
+Foreground pid: 747326, command: /tmp/tmp.COOdjYfMwo/sl3ep_user_4054, Signaled, info: 2
+COMMAND->COMMAND->/tmp/tmp.COOdjYfMwo/sl3ep_user_4054 3003 5
+^Z
+Foreground pid: 747342, command: /tmp/tmp.COOdjYfMwo/sl3ep_user_4054, Suspended, info: 20
+COMMAND->COMMAND->bg
+Background job running... pid: 747342, command: /tmp/tmp.COOdjYfMwo/sl3ep_user_4054
+COMMAND->Background pid: 747342, command: /tmp/tmp.COOdjYfMwo/sl3ep_user_4054, Continued, info: 18
+fg 11
+^Z
+Foreground pid: 747146, command: /tmp/tmp.COOdjYfMwo/sl3ep_user_4054, Suspended, info: 20
+COMMAND->COMMAND->bg
+Background job running... pid: 747146, command: /tmp/tmp.COOdjYfMwo/sl3ep_user_4054
+COMMAND->Background pid: 747146, command: /tmp/tmp.COOdjYfMwo/sl3ep_user_4054, Continued, info: 18
+bg 11
+Background job running... pid: 747145, command: /tmp/tmp.COOdjYfMwo/sl3ep_user_4054
+COMMAND->/tmp/tmp.COOdjYfMwo/sl3ep_user_4054 3000 6 &
+Background job running... pid: 747377, command: /tmp/tmp.COOdjYfMwo/sl3ep_user_4054
+COMMAND->/tmp/tmp.COOdjYfMwo/sl3ep_user_4054 3001 6 &
+Background job running... pid: 747379, command: /tmp/tmp.COOdjYfMwo/sl3ep_user_4054
+COMMAND->fg
+^Z
+Foreground pid: 747379, command: /tmp/tmp.COOdjYfMwo/sl3ep_user_4054, Suspended, info: 20
+COMMAND->/tmp/tmp.COOdjYfMwo/sl3ep_user_4054 3000 7 &
+Background job running... pid: 747396, command: /tmp/tmp.COOdjYfMwo/sl3ep_user_4054
+COMMAND->/tmp/tmp.COOdjYfMwo/sl3ep_user_4054 3001 7 &
+Background job running... pid: 747397, command: /tmp/tmp.COOdjYfMwo/sl3ep_user_4054
+COMMAND->fg
+^Z
+Foreground pid: 747397, command: /tmp/tmp.COOdjYfMwo/sl3ep_user_4054, Suspended, info: 20
+COMMAND->COMMAND->/tmp/tmp.COOdjYfMwo/sl3ep_user_4054 3002 7
+^Z
+Foreground pid: 747398, command: /tmp/tmp.COOdjYfMwo/sl3ep_user_4054, Suspended, info: 20
+COMMAND->COMMAND->fg
+^C
+Foreground pid: 747398, command: /tmp/tmp.COOdjYfMwo/sl3ep_user_4054, Signaled, info: 2
+COMMAND->COMMAND->/tmp/tmp.COOdjYfMwo/sl3ep_user_4054 3003 7
+^Z
+Foreground pid: 747399, command: /tmp/tmp.COOdjYfMwo/sl3ep_user_4054, Suspended, info: 20
+COMMAND->COMMAND->bg
+Background job running... pid: 747399, command: /tmp/tmp.COOdjYfMwo/sl3ep_user_4054
+COMMAND->Background pid: 747399, command: /tmp/tmp.COOdjYfMwo/sl3ep_user_4054, Continued, info: 18
+fg 7
+^Z
+Foreground pid: 747342, command: /tmp/tmp.COOdjYfMwo/sl3ep_user_4054, Suspended, info: 20
+COMMAND->COMMAND->bg
+Background job running... pid: 747342, command: /tmp/tmp.COOdjYfMwo/sl3ep_user_4054
+COMMAND->Background pid: 747342, command: /tmp/tmp.COOdjYfMwo/sl3ep_user_4054, Continued, info: 18
+bg 7
+Background job running... pid: 747146, command: /tmp/tmp.COOdjYfMwo/sl3ep_user_4054
+COMMAND->/tmp/tmp.COOdjYfMwo/sl3ep_user_4054 3000 8 &
+Background job running... pid: 747455, command: /tmp/tmp.COOdjYfMwo/sl3ep_user_4054
+COMMAND->/tmp/tmp.COOdjYfMwo/sl3ep_user_4054 3001 8 &
+Background job running... pid: 747456, command: /tmp/tmp.COOdjYfMwo/sl3ep_user_4054
+COMMAND->fg
+^Z
+Foreground pid: 747456, command: /tmp/tmp.COOdjYfMwo/sl3ep_user_4054, Suspended, info: 20
+COMMAND->COMMAND->/tmp/tmp.COOdjYfMwo/sl3ep_user_4054 3002 8
+^Z
+Foreground pid: 747485, command: /tmp/tmp.COOdjYfMwo/sl3ep_user_4054, Suspended, info: 20
+COMMAND->COMMAND->fg
+^C
+Foreground pid: 747485, command: /tmp/tmp.COOdjYfMwo/sl3ep_user_4054, Signaled, info: 2
+COMMAND->COMMAND->fg 16
+^Z
+Foreground pid: 747191, command: /tmp/tmp.COOdjYfMwo/sl3ep_user_4054, Suspended, info: 20
+COMMAND->COMMAND->bg
+Background job running... pid: 747191, command: /tmp/tmp.COOdjYfMwo/sl3ep_user_4054
+Background job running... pid: 747191, command: /tmp/tmp.COOdjYfMwo/sl3ep_user_4054
+Background pid: 747191, command: /tmp/tmp.COOdjYfMwo/sl3ep_user_4054, Continued, info: 18
+COMMAND->bg 16
+Background job running... pid: 747255, command: /tmp/tmp.COOdjYfMwo/sl3ep_user_4054
+COMMAND->/tmp/tmp.COOdjYfMwo/sl3ep_user_4054 3000 9 &
+Background job running... pid: 747593, command: /tmp/tmp.COOdjYfMwo/sl3ep_user_4054
+COMMAND->/tmp/tmp.COOdjYfMwo/sl3ep_user_4054 3001 9 &
+Background job running... pid: 747595, command: /tmp/tmp.COOdjYfMwo/sl3ep_user_4054
+COMMAND->fg
+^Z
+Foreground pid: 747595, command: /tmp/tmp.COOdjYfMwo/sl3ep_user_4054, Suspended, info: 20
+COMMAND->COMMAND->/tmp/tmp.COOdjYfMwo/sl3ep_user_4054 3003 9
+^Z
+Foreground pid: 747603, command: /tmp/tmp.COOdjYfMwo/sl3ep_user_4054, Suspended, info: 20
+COMMAND->COMMAND->bg
+Background job running... pid: 747603, command: /tmp/tmp.COOdjYfMwo/sl3ep_user_4054
+Background job running... pid: 747603, command: /tmp/tmp.COOdjYfMwo/sl3ep_user_4054
+Background pid: 747603, command: /tmp/tmp.COOdjYfMwo/sl3ep_user_4054, Continued, info: 18
+COMMAND->/tmp/tmp.COOdjYfMwo/sl3ep_user_4054 3002 10
+^Z
+Foreground pid: 747653, command: /tmp/tmp.COOdjYfMwo/sl3ep_user_4054, Suspended, info: 20
+COMMAND->COMMAND->fg
+^C
+Foreground pid: 747653, command: /tmp/tmp.COOdjYfMwo/sl3ep_user_4054, Signaled, info: 2
+COMMAND->COMMAND->fg 1
+^Z
+Foreground pid: 747603, command: /tmp/tmp.COOdjYfMwo/sl3ep_user_4054, Suspended, info: 20
+COMMAND->COMMAND->bg
+Background pid: 747603, command: /tmp/tmp.COOdjYfMwo/sl3ep_user_4054, Continued, info: 18
+Background job running... pid: 747603, command: /tmp/tmp.COOdjYfMwo/sl3ep_user_4054
+COMMAND->bg 1
+Background job running... pid: 747603, command: /tmp/tmp.COOdjYfMwo/sl3ep_user_4054
+COMMAND->fg -2
+COMMAND->^Z
+COMMAND->bg -2
+COMMAND->fg 1045
+COMMAND->^Z
+COMMAND->bg 1045
+COMMAND->fg bg
+COMMAND->bg fg
+COMMAND->
+.... ps output ...
+SN 747145 746705 user_40+ /tmp/tmp.COOdjYfMwo/sl3ep_user_4054 3000 1
+SN 747146 746705 user_40+ /tmp/tmp.COOdjYfMwo/sl3ep_user_4054 3001 1
+SN 747148 746705 user_40+ /tmp/tmp.COOdjYfMwo/sl3ep_user_4054 3003 1
+SN 747189 746705 user_40+ /tmp/tmp.COOdjYfMwo/sl3ep_user_4054 3000 2
+SN 747191 746705 user_40+ /tmp/tmp.COOdjYfMwo/sl3ep_user_4054 3001 2
+SN 747255 746705 user_40+ /tmp/tmp.COOdjYfMwo/sl3ep_user_4054 3000 3
+TN 747258 746705 user_40+ /tmp/tmp.COOdjYfMwo/sl3ep_user_4054 3001 3
+SN 747265 746705 user_40+ /tmp/tmp.COOdjYfMwo/sl3ep_user_4054 3003 3
+SN 747288 746705 user_40+ /tmp/tmp.COOdjYfMwo/sl3ep_user_4054 3000 4
+TN 747293 746705 user_40+ /tmp/tmp.COOdjYfMwo/sl3ep_user_4054 3001 4
+SN 747342 746705 user_40+ /tmp/tmp.COOdjYfMwo/sl3ep_user_4054 3003 5
+SN 747377 746705 user_40+ /tmp/tmp.COOdjYfMwo/sl3ep_user_4054 3000 6
+TN 747379 746705 user_40+ /tmp/tmp.COOdjYfMwo/sl3ep_user_4054 3001 6
+SN 747396 746705 user_40+ /tmp/tmp.COOdjYfMwo/sl3ep_user_4054 3000 7
+TN 747397 746705 user_40+ /tmp/tmp.COOdjYfMwo/sl3ep_user_4054 3001 7
+SN 747399 746705 user_40+ /tmp/tmp.COOdjYfMwo/sl3ep_user_4054 3003 7
+SN 747455 746705 user_40+ /tmp/tmp.COOdjYfMwo/sl3ep_user_4054 3000 8
+TN 747456 746705 user_40+ /tmp/tmp.COOdjYfMwo/sl3ep_user_4054 3001 8
+SN 747593 746705 user_40+ /tmp/tmp.COOdjYfMwo/sl3ep_user_4054 3000 9
+TN 747595 746705 user_40+ /tmp/tmp.COOdjYfMwo/sl3ep_user_4054 3001 9
+SN 747603 746705 user_40+ /tmp/tmp.COOdjYfMwo/sl3ep_user_4054 3003 9
+....
+Background pid: 747145, command: /tmp/tmp.COOdjYfMwo/sl3ep_user_4054, Suspended, info: 19
+Background pid: 747288, command: /tmp/tmp.COOdjYfMwo/sl3ep_user_4054, Suspended, info: 19
+Background pid: 747593, command: /tmp/tmp.COOdjYfMwo/sl3ep_user_4054, Suspended, info: 19
+Background pid: 747603, command: /tmp/tmp.COOdjYfMwo/sl3ep_user_4054, Suspended, info: 19
+Background pid: 747189, command: /tmp/tmp.COOdjYfMwo/sl3ep_user_4054, Suspended, info: 19
+Background pid: 747255, command: /tmp/tmp.COOdjYfMwo/sl3ep_user_4054, Suspended, info: 19
+Background pid: 747265, command: /tmp/tmp.COOdjYfMwo/sl3ep_user_4054, Suspended, info: 19
+Background pid: 747148, command: /tmp/tmp.COOdjYfMwo/sl3ep_user_4054, Suspended, info: 19
+Background pid: 747146, command: /tmp/tmp.COOdjYfMwo/sl3ep_user_4054, Suspended, info: 19
+Background pid: 747377, command: /tmp/tmp.COOdjYfMwo/sl3ep_user_4054, Suspended, info: 19
+Background pid: 747396, command: /tmp/tmp.COOdjYfMwo/sl3ep_user_4054, Suspended, info: 19
+Background pid: 747399, command: /tmp/tmp.COOdjYfMwo/sl3ep_user_4054, Suspended, info: 19
+Background pid: 747342, command: /tmp/tmp.COOdjYfMwo/sl3ep_user_4054, Suspended, info: 19
+Background pid: 747455, command: /tmp/tmp.COOdjYfMwo/sl3ep_user_4054, Suspended, info: 19
+Background pid: 747191, command: /tmp/tmp.COOdjYfMwo/sl3ep_user_4054, Suspended, info: 19
+Background pid: 747145, command: /tmp/tmp.COOdjYfMwo/sl3ep_user_4054, Signaled, info: 9
+Background pid: 747146, command: /tmp/tmp.COOdjYfMwo/sl3ep_user_4054, Signaled, info: 9
+Background pid: 747148, command: /tmp/tmp.COOdjYfMwo/sl3ep_user_4054, Signaled, info: 9
+Background pid: 747189, command: /tmp/tmp.COOdjYfMwo/sl3ep_user_4054, Signaled, info: 9
+Background pid: 747191, command: /tmp/tmp.COOdjYfMwo/sl3ep_user_4054, Signaled, info: 9
+Background pid: 747255, command: /tmp/tmp.COOdjYfMwo/sl3ep_user_4054, Signaled, info: 9
+Background pid: 747265, command: /tmp/tmp.COOdjYfMwo/sl3ep_user_4054, Signaled, info: 9
+Background pid: 747258, command: /tmp/tmp.COOdjYfMwo/sl3ep_user_4054, Signaled, info: 9
+Background pid: 747288, command: /tmp/tmp.COOdjYfMwo/sl3ep_user_4054, Signaled, info: 9
+Background pid: 747593, command: /tmp/tmp.COOdjYfMwo/sl3ep_user_4054, Signaled, info: 9
+Background pid: 747595, command: /tmp/tmp.COOdjYfMwo/sl3ep_user_4054, Signaled, info: 9
+Background pid: 747603, command: /tmp/tmp.COOdjYfMwo/sl3ep_user_4054, Signaled, info: 9
+Background pid: 747293, command: /tmp/tmp.COOdjYfMwo/sl3ep_user_4054, Signaled, info: 9
+Background pid: 747377, command: /tmp/tmp.COOdjYfMwo/sl3ep_user_4054, Signaled, info: 9
+Background pid: 747379, command: /tmp/tmp.COOdjYfMwo/sl3ep_user_4054, Signaled, info: 9
+Background pid: 747396, command: /tmp/tmp.COOdjYfMwo/sl3ep_user_4054, Signaled, info: 9
+Background pid: 747397, command: /tmp/tmp.COOdjYfMwo/sl3ep_user_4054, Signaled, info: 9
+Background pid: 747342, command: /tmp/tmp.COOdjYfMwo/sl3ep_user_4054, Signaled, info: 9
+Background pid: 747399, command: /tmp/tmp.COOdjYfMwo/sl3ep_user_4054, Signaled, info: 9
+Background pid: 747455, command: /tmp/tmp.COOdjYfMwo/sl3ep_user_4054, Signaled, info: 9
+Background pid: 747456, command: /tmp/tmp.COOdjYfMwo/sl3ep_user_4054, Signaled, info: 9
+
+COMMAND->
+.... ps output ...
+
+....
+
+------------------
+
+
+
+------------------
+
+============== PRUEBAS PROC. ZOMBIES, ^C y ^Z ==============
+
+COMMAND->sleep .01 &
+Background job running... pid: 747907, command: sleep
+COMMAND->Background pid: 747907, command: sleep, Exited, info: 0
+grep 1
+^C
+Foreground pid: 747908, command: grep, Signaled, info: 2
+COMMAND->cat
+^C
+Foreground pid: 747915, command: cat, Signaled, info: 2
+COMMAND->xclock -bg yellow -update 1
+Error: Can't open display: :99.99
+Foreground pid: 747922, command: xclock, Exited, info: 1
+COMMAND->^C
+COMMAND->^C
+COMMAND->sleep .01 &
+Background job running... pid: 747926, command: sleep
+COMMAND->Background pid: 747926, command: sleep, Exited, info: 0
+^C
+COMMAND->^C
+COMMAND->^Z
+COMMAND->^C
+COMMAND->^Z
+COMMAND->
+COMMAND->
+COMMAND->sleep 22000 &
+Background job running... pid: 747941, command: sleep
+COMMAND->sleep 22001 &
+Background job running... pid: 747948, command: sleep
+COMMAND->sleep 22002 &
+Background job running... pid: 747953, command: sleep
+COMMAND->sleep 22003 &
+Background job running... pid: 747955, command: sleep
+COMMAND->sleep 22004 &
+Background job running... pid: 747956, command: sleep
+COMMAND->killall -TERM -u user_4054 sleep
+Background pid: 747941, command: sleep, Signaled, info: 15
+Background pid: 747953, command: sleep, Signaled, info: 15
+Foreground pid: 747957, command: killall, Exited, info: 0
+COMMAND->Background pid: 747948, command: sleep, Signaled, info: 15
+Background pid: 747955, command: sleep, Signaled, info: 15
+Background pid: 747956, command: sleep, Signaled, info: 15
+
+COMMAND->
+COMMAND->
+COMMAND->
+------------------
+
+
+
+------------------
+
+============== COMANDO JOBS ==============
+
+COMMAND->
+COMMAND->sleep 601
+^Z
+Foreground pid: 748099, command: sleep, Suspended, info: 20
+COMMAND->COMMAND->
+COMMAND->sleep 602
+^Z
+Foreground pid: 748118, command: sleep, Suspended, info: 20
+COMMAND->COMMAND->
+COMMAND->sleep 603
+^Z
+Foreground pid: 748127, command: sleep, Suspended, info: 20
+COMMAND->COMMAND->
+COMMAND->sleep 604
+^C
+Foreground pid: 748135, command: sleep, Signaled, info: 2
+COMMAND->COMMAND->
+COMMAND->sleep 605
+^C
+Foreground pid: 748153, command: sleep, Signaled, info: 2
+COMMAND->COMMAND->
+COMMAND->fg
+^Z
+Foreground pid: 748127, command: sleep, Suspended, info: 20
+COMMAND->COMMAND->
+COMMAND->fg
+^Z
+Foreground pid: 748127, command: sleep, Suspended, info: 20
+COMMAND->COMMAND->
+COMMAND->sleep 608 &
+Background job running... pid: 748181, command: sleep
+COMMAND->
+COMMAND->sleep 609
+^Z
+Foreground pid: 748190, command: sleep, Suspended, info: 20
+COMMAND->COMMAND->
+COMMAND->sleep 610 &
+Background job running... pid: 748197, command: sleep
+COMMAND->
+COMMAND->sleep 611
+^C
+Foreground pid: 748204, command: sleep, Signaled, info: 2
+COMMAND->COMMAND->
+COMMAND->sleep 612
+^C
+Foreground pid: 748206, command: sleep, Signaled, info: 2
+COMMAND->COMMAND->
+COMMAND->sleep 613
+^Z
+Foreground pid: 748207, command: sleep, Suspended, info: 20
+COMMAND->COMMAND->
+COMMAND->sleep 614
+^C
+Foreground pid: 748227, command: sleep, Signaled, info: 2
+COMMAND->COMMAND->
+COMMAND->sleep 615
+^Z
+Foreground pid: 748231, command: sleep, Suspended, info: 20
+COMMAND->COMMAND->
+COMMAND->jobs
+Contents of jobs list:
+[1] pid: 748231, command: sleep, state: Stopped
+[2] pid: 748207, command: sleep, state: Stopped
+[3] pid: 748197, command: sleep, state: Background
+[4] pid: 748190, command: sleep, state: Stopped
+[5] pid: 748181, command: sleep, state: Background
+[6] pid: 748127, command: sleep, state: Stopped
+[7] pid: 748118, command: sleep, state: Stopped
+[8] pid: 748099, command: sleep, state: Stopped
+COMMAND->.... buffer after jobs
+jobs
+Contents of jobs list:
+[1] pid: 748231, command: sleep, state: Stopped
+[2] pid: 748207, command: sleep, state: Stopped
+[3] pid: 748197, command: sleep, state: Background
+[4] pid: 748190, command: sleep, state: Stopped
+[5] pid: 748181, command: sleep, state: Background
+[6] pid: 748127, command: sleep, state: Stopped
+[7] pid: 748118, command: sleep, state: Stopped
+[8] pid: 748099, command: sleep, state: Stopped
+.... jobs
+
+.... ps output ...
+TN 748099 746705 user_40+ sleep 601
+TN 748118 746705 user_40+ sleep 602
+TN 748127 746705 user_40+ sleep 603
+SN 748181 746705 user_40+ sleep 608
+TN 748190 746705 user_40+ sleep 609
+SN 748197 746705 user_40+ sleep 610
+TN 748207 746705 user_40+ sleep 613
+TN 748231 746705 user_40+ sleep 615
+....
+Background pid: 748181, command: sleep, Suspended, info: 19
+Background pid: 748197, command: sleep, Suspended, info: 19
+Background pid: 748099, command: sleep, Signaled, info: 9
+Background pid: 748118, command: sleep, Signaled, info: 9
+Background pid: 748127, command: sleep, Signaled, info: 9
+Background pid: 748181, command: sleep, Signaled, info: 9
+Background pid: 748190, command: sleep, Signaled, info: 9
+Background pid: 748197, command: sleep, Signaled, info: 9
+Background pid: 748207, command: sleep, Signaled, info: 9
+Background pid: 748231, command: sleep, Signaled, info: 9
+
+COMMAND->
+------------------
+
+
+
+------------------
+
+============== COMANDOS QUE RECIBEN SIGTTIN EN BG ==============
+
+COMMAND->pkill -KILL -P 746705
+Foreground pid: 748591, command: pkill, Exited, info: 1
+COMMAND->cat &
+Background job running... pid: 748596, command: cat
+COMMAND->Background pid: 748596, command: cat, Suspended, info: 21
+sort &
+Background job running... pid: 748602, command: sort
+Background job running... pid: 748602, command: sort
+Background pid: 748602, command: sort, Suspended, info: 21
+COMMAND->awk '{print pattern}' &
+Background job running... pid: 748606, command: awk
+COMMAND->awk: cmd. line:1: '{print
+awk: cmd. line:1: ^ invalid char ''' in expression
+Background pid: 748606, command: awk, Exited, info: 1
+tr a b &
+Background job running... pid: 748617, command: tr
+COMMAND->Background pid: 748617, command: tr, Suspended, info: 21
+
+COMMAND->bg
+Background job running... pid: 748617, command: tr
+COMMAND->Background pid: 748617, command: tr, Suspended, info: 21
+
+COMMAND->^Z
+COMMAND->
+COMMAND->^Z
+COMMAND->
+COMMAND->^Z
+COMMAND->
+COMMAND->^Z
+COMMAND->
+COMMAND->^Z
+COMMAND->
+COMMAND->^Z
+COMMAND->
+COMMAND->^Z
+COMMAND->
+COMMAND->^Z
+COMMAND->
+COMMAND->^Z
+COMMAND->
+COMMAND->fg 4
+COMMAND->
+COMMAND->fg 3
+
+
+fg 3
+fg 3
+
+
+^Z
+Foreground pid: 748596, command: cat, Suspended, info: 20
+COMMAND->
+COMMAND->^Z
+COMMAND->
+COMMAND->fg 4
+COMMAND->
+COMMAND->^Z
+COMMAND->
+COMMAND->^Z
+COMMAND->
+COMMAND->^Z
+COMMAND->
+COMMAND->fg 3
+
+^Z
+Foreground pid: 748602, command: sort, Suspended, info: 20
+COMMAND->
+COMMAND->fg 4
+COMMAND->
+COMMAND->fg 3
+
+
+bg
+bg
+
+
+^Z
+Foreground pid: 748617, command: tr, Suspended, info: 20
+COMMAND->
+COMMAND->^Z
+COMMAND->
+COMMAND->fg 1
+
+
+
+bg
+bg
+
+
+^Z
+Foreground pid: 748617, command: tr, Suspended, info: 20
+COMMAND->
+COMMAND->^Z
+COMMAND->^Z
+COMMAND->bg
+Background job running... pid: 748617, command: tr
+Background job running... pid: 748617, command: tr
+Background pid: 748617, command: tr, Continued, info: 18
+COMMAND->
+Background pid: 748617, command: tr, Suspended, info: 21
+^Z
+COMMAND->bg
+Background pid: 748617, command: tr, Suspended, info: 21
+Background job running... pid: 748617, command: tr
+COMMAND->jobs
+Contents of jobs list:
+[1] pid: 748617, command: tr, state: Stopped
+[2] pid: 748602, command: sort, state: Stopped
+[3] pid: 748596, command: cat, state: Stopped
+COMMAND->
+.... ps output ...
+TN 748596 746705 user_40+ cat
+TN 748602 746705 user_40+ sort
+TN 748617 746705 user_40+ tr a b
+....
+
+COMMAND->pkill -KILL -P 746705
+Background pid: 748596, command: cat, Signaled, info: 9
+Background pid: 748617, command: tr, Signaled, info: 9
+Foreground pid: 749049, command: pkill, Exited, info: 0
+COMMAND->Background pid: 748602, command: sort, Signaled, info: 9
+
+COMMAND->
+------------------
+
+
+
+------------------
+
+============== GROUPSIGNAL ==============
+
+COMMAND->pkill -KILL -P 746705
+Foreground pid: 749074, command: pkill, Exited, info: 1
+COMMAND->chmod 755 ./grouptest.sh
+Foreground pid: 749076, command: chmod, Exited, info: 0
+COMMAND->./grouptest.sh &
+Background job running... pid: 749081, command: ./grouptest.sh
+COMMAND->
+COMMAND->fg
+
+^Z
+Foreground pid: 749081, command: ./grouptest.sh, Suspended, info: 20
+COMMAND->COMMAND->
+COMMAND->[info:] Tras ^Z todos los sleeps deben estar suspendidos
+
+.... ps output ...
+TN 749082 749081 user_40+ sleep 1000
+TN 749083 749081 user_40+ sleep 1000
+TN 749084 749081 user_40+ sleep 1000
+TN 749085 749081 user_40+ sleep 1000
+TN 749086 749081 user_40+ sleep 1000
+....
+fg
+
+^Z
+Foreground pid: 749081, command: ./grouptest.sh, Suspended, info: 20
+COMMAND->COMMAND->
+COMMAND->bg
+Background pid: 749081, command: ./grouptest.sh, Continued, info: 18
+Background job running... pid: 749081, command: ./grouptest.sh
+COMMAND->
+COMMAND->[info:] Tras pasar el proc. ppal. a bg, ninguno debe estar suspendido
+
+.... ps output ...
+SN 749082 749081 user_40+ sleep 1000
+SN 749083 749081 user_40+ sleep 1000
+SN 749084 749081 user_40+ sleep 1000
+SN 749085 749081 user_40+ sleep 1000
+SN 749086 749081 user_40+ sleep 1000
+....
+[info:] Tras matar todos los procesos del grupo ...
+
+.... ps output ...
+
+....
+
+------------------
+
+
+------------------
+
+============== COMANDO INTERNO CD ==============
+Killed
+Killed
+Killed
+Killed
+Killed
+Background pid: 749081, command: ./grouptest.sh, Exited, info: 137
+
+COMMAND->pkill -KILL -P 746705
+Foreground pid: 749277, command: pkill, Exited, info: 1
+COMMAND->cd /tmp/tmp.COOdjYfMwo/__11616.918060677532/11616.918060677532
+COMMAND->/bin/pwd
+/tmp/tmp.COOdjYfMwo/__11616.918060677532/11616.918060677532
+Foreground pid: 749446, command: /bin/pwd, Exited, info: 0
+COMMAND->cd ..
+COMMAND->/bin/pwd
+/tmp/tmp.COOdjYfMwo/__11616.918060677532
+Foreground pid: 749494, command: /bin/pwd, Exited, info: 0
+COMMAND->
+------------------
+
+
+------------------
+
+============== Redirecciones < y > ==============
+
+COMMAND->sleep .05
+Foreground pid: 749512, command: sleep, Exited, info: 0
+COMMAND->::::::::::::::
+/tmp/tmp.COOdjYfMwo/_file_user_4054_17368339_746705.data001
+::::::::::::::
+helloworld_17368339_746705_byeMon Jun 1 23:54:50 CEST 2026
+Linux
+user_4054
+.......... Probando redirección <
+md5sum < /tmp/tmp.COOdjYfMwo/_file_user_4054_17368339_746705.data001
+fdce87cb12ca8a390042a0113437ac01 -
+Foreground pid: 749635, command: md5sum, Exited, info: 0
+COMMAND->--------- md5sumOK=1
+
+.......... Probando redireccion >
+grep -i -E helloworld /tmp/tmp.COOdjYfMwo/_file_user_4054_17368339_746705.data001 > /tmp/tmp.COOdjYfMwo/_file_user_4054_17368339_746705.data003
+Foreground pid: 749662, command: grep, Exited, info: 0
+COMMAND->sync
+Foreground pid: 749667, command: sync, Exited, info: 0
+COMMAND->helloworld_17368339_746705_byeMon Jun 1 23:54:50 CEST 2026
+helloworld_17368339_746705_byeMon Jun 1 23:54:50 CEST 2026
+---------- grepOK=1
+
+.......... Probando redirecciones < y >
+grep -i -E helloworld /tmp/tmp.COOdjYfMwo/_file_user_4054_17368339_746705.data001 > /tmp/tmp.COOdjYfMwo/_file_user_4054_17368339_746705.data002
+Foreground pid: 749682, command: grep, Exited, info: 0
+COMMAND->grep -E helloworld > /tmp/tmp.COOdjYfMwo/_file_user_4054_17368339_746705.data003 < /tmp/tmp.COOdjYfMwo/_file_user_4054_17368339_746705.data001 -i
+Foreground pid: 749683, command: grep, Exited, info: 0
+COMMAND->sync
+Foreground pid: 749684, command: sync, Exited, info: 0
+COMMAND->
+File: _file_user_4054_17368339_746705.data002 ---------------------------
+00000000 68 65 6c 6c 6f 77 6f 72 6c 64 5f 31 37 33 36 38 |helloworld_17368|
+00000010 33 33 39 5f 37 34 36 37 30 35 5f 62 79 65 4d 6f |339_746705_byeMo|
+00000020 6e 20 4a 75 6e 20 20 31 20 32 33 3a 35 34 3a 35 |n Jun 1 23:54:5|
+00000030 30 20 43 45 53 54 20 32 30 32 36 0a |0 CEST 2026.|
+0000003c
+File: _file_user_4054_17368339_746705.data003 ---------------------------
+00000000 68 65 6c 6c 6f 77 6f 72 6c 64 5f 31 37 33 36 38 |helloworld_17368|
+00000010 33 33 39 5f 37 34 36 37 30 35 5f 62 79 65 4d 6f |339_746705_byeMo|
+00000020 6e 20 4a 75 6e 20 20 31 20 32 33 3a 35 34 3a 35 |n Jun 1 23:54:5|
+00000030 30 20 43 45 53 54 20 32 30 32 36 0a |0 CEST 2026.|
+0000003c
+---------- OUTcmp=0, cmpOK=1
+
+
+------------------
+
+
+------------------

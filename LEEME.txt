@@ -1,0 +1,18 @@
+Francisco Dorado Maldonado
+Grado Ing. Informatica 2°A 25-26
+
+Ampliaciones anadidas sobre el shell basico:
+
+- Manejo de SIGHUP: cada vez que el shell recibe la senal, anade
+  "SIGHUP recibido." al fichero hup.txt.
+
+- Nuevos comandos internos:
+  currjob: muestra el trabajo actual.
+  deljob: elimina de la lista el trabajo actual si no esta parado.
+  zjobs: lista los procesos zombie hijos del shell recorriendo /proc.
+  bgteam: lanza N instancias iguales de un comando en background.
+  exit: termina el shell con el valor indicado o con 0 por defecto.
+
+- Redireccion con anexado >>:
+  se detecta antes del parseo normal de redirecciones y la salida se abre en
+  modo append en lugar de sobreescritura.

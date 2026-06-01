@@ -14,6 +14,9 @@ To compile and run the program:
 
 **/
 
+// Francisco Dorado Maldonado
+// Grado Ing. Informatica 2°A 25-26
+
 #include "job_control.h"   // remember to compile with module job_control.c 
 #include <string.h>
 #include <dirent.h>
@@ -93,7 +96,7 @@ void manejador(int s)
       // Si cambia de estado, informar y actualizar la lista
       if (WIFEXITED(status)) 
       {
-		printf("Background pid: %d, command: %s, Exited, info: %d\n", job->pgid, job->command, WTERMSIG(status));
+		printf("Background pid: %d, command: %s, Exited, info: %d\n", job->pgid, job->command, WEXITSTATUS(status));
         delete_job(job_list, job);
       } else if (WIFSIGNALED(status)) 
       {
@@ -102,11 +105,11 @@ void manejador(int s)
       } else if (WIFSTOPPED(status)) 
       {
         job->state = STOPPED;
-		printf("Background pid: %d, command: %s, Suspended, info: %d\n", job->pgid, job->command, WTERMSIG(status));
+		printf("Background pid: %d, command: %s, Suspended, info: %d\n", job->pgid, job->command, WSTOPSIG(status));
       } else if (WIFCONTINUED(status))
       {
         job->state = BACKGROUND;
-		printf("Background pid: %d, command: %s, Continued, info: %d\n", job->pgid, job->command, WTERMSIG(status));
+		printf("Background pid: %d, command: %s, Continued, info: %d\n", job->pgid, job->command, SIGCONT);
       }
     }
   }
@@ -179,70 +182,6 @@ int main(void)
 			continue;
 		}
 
-		if (strcmp(args[0], "currjob") == 0) // comando currjob
-		{
-			block_SIGCHLD(); // Bloquear SIGCHLD para evitar que se maneje mientras se accede a la lista de trabajos
-			if (empty_list(job_list)) // Si job_list esta vacia
-			{
-				printf("No hay trabajo actual\n");
-			} else {
-				job *item = get_item_bypos(job_list, 1); // El job actual es el primero de la lista
-				printf("Trabajo actual: PID=%d command=%s\n", item->pgid, item->command);
-			}
-			unblock_SIGCHLD(); // Desbloquear SIGCHLD para permitir de nuevo el manejo de la lista de trabajos
-			continue;
-		}
-
-		if (strcmp(args[0], "exit") == 0) // comando exit
-		{
-			int ret;
-
-			if (args[1] == NULL)
-			{
-				ret = 0; // Sin argumento, salir con 0
-			}
-			else
-			{
-				ret = atoi(args[1]); // Convertir el primer argumento a entero
-				if (ret == 0 && strcmp(args[1], "0") != 0)
-				{
-					ret = 0; // Si no es entero valido, usar 0
-				}
-			}
-
-			exit(ret);
-		}
-
-		if (strcmp(args[0], "deljob") == 0) // comando deljob
-		{
-			block_SIGCHLD(); // Bloquear SIGCHLD para evitar que se maneje mientras se modifica la lista de trabajos
-
-			if (empty_list(job_list))
-			{
-				printf("No hay trabajo actual\n");
-
-			} else {
-				job *item = get_item_bypos(job_list, 1); // El trabajo actual es el primero de la lista
-				if (item->state == STOPPED)
-				{
-					printf("No se permiten borrar trabajos en segundo plano suspendidos\n");
-				} else {
-					// Solo se borra de la lista, el proceso sigue ejecutandose
-					printf("Borrando trabajo actual de la lista de jobs: PID=%d command=%s\n", item->pgid, item->command);
-					delete_job(job_list, item);
-				}
-			}
-			
-			unblock_SIGCHLD(); // Desbloquear SIGCHLD para permitir de nuevo el manejo de la lista de trabajos
-			continue;
-		}
-
-		if (strcmp(args[0], "zjobs") == 0) // comando zjobs
-		{
-			traverse_proc(); // Listar zombis creados por el shell
-			continue;
-		}
-
 		if (strcmp(args[0], "fg") == 0) // comando fg
 		{
 			int pos = get_job_position(args[1]);
@@ -308,6 +247,8 @@ int main(void)
 			continue;
 		}
 
+
+		/*
 		if (strcmp(args[0], "bgteam") == 0) // comando bgteam
 		{
 			int n;
@@ -407,6 +348,71 @@ int main(void)
 			continue;
 		}
 
+		if (strcmp(args[0], "currjob") == 0) // comando currjob
+		{
+			block_SIGCHLD(); // Bloquear SIGCHLD para evitar que se maneje mientras se accede a la lista de trabajos
+			if (empty_list(job_list)) // Si job_list esta vacia
+			{
+				printf("No hay trabajo actual\n");
+			} else {
+				job *item = get_item_bypos(job_list, 1); // El job actual es el primero de la lista
+				printf("Trabajo actual: PID=%d command=%s\n", item->pgid, item->command);
+			}
+			unblock_SIGCHLD(); // Desbloquear SIGCHLD para permitir de nuevo el manejo de la lista de trabajos
+			continue;
+		}
+
+		if (strcmp(args[0], "exit") == 0) // comando exit
+		{
+			int ret;
+
+			if (args[1] == NULL)
+			{
+				ret = 0; // Sin argumento, salir con 0
+			}
+			else
+			{
+				ret = atoi(args[1]); // Convertir el primer argumento a entero
+				if (ret == 0 && strcmp(args[1], "0") != 0)
+				{
+					ret = 0; // Si no es entero valido, usar 0
+				}
+			}
+
+			exit(ret);
+		}
+
+		if (strcmp(args[0], "deljob") == 0) // comando deljob
+		{
+			block_SIGCHLD(); // Bloquear SIGCHLD para evitar que se maneje mientras se modifica la lista de trabajos
+
+			if (empty_list(job_list))
+			{
+				printf("No hay trabajo actual\n");
+
+			} else {
+				job *item = get_item_bypos(job_list, 1); // El trabajo actual es el primero de la lista
+				if (item->state == STOPPED)
+				{
+					printf("No se permiten borrar trabajos en segundo plano suspendidos\n");
+				} else {
+					// Solo se borra de la lista, el proceso sigue ejecutandose
+					printf("Borrando trabajo actual de la lista de jobs: PID=%d command=%s\n", item->pgid, item->command);
+					delete_job(job_list, item);
+				}
+			}
+			
+			unblock_SIGCHLD(); // Desbloquear SIGCHLD para permitir de nuevo el manejo de la lista de trabajos
+			continue;
+		}
+
+		if (strcmp(args[0], "zjobs") == 0) // comando zjobs
+		{
+			traverse_proc(); // Listar zombis creados por el shell
+			continue;
+		}
+
+		*/
 		// ---------------------------------------------------------------------------- COMANDOS EXTERNOS ----------------------------------------------------------------------------
 
 		/* the steps are:
