@@ -94,6 +94,7 @@ int main(void)
 		printf("COMMAND->");
 		fflush(stdout);
 		get_command(inputBuffer, MAX_LINE, args, &background);  /* get next command */
+		parse_redirections(args, &file_in, &file_out);
 		
 		if(args[0]==NULL) continue;   // if empty command
 
@@ -204,11 +205,47 @@ int main(void)
 		// (2) the child process will invoke execvp()
 		if (pid_fork == 0) // child process
 		{
+			
 			setpgid(0, getpid());
-      restore_terminal_signals();
-      execvp(args[0], args);
-      fprintf(stderr, "Error, command not found: %s\n", args[0]);
-      exit(255);
+
+			if (file_in)
+			{
+				FILE* file = fopen(file_in, "r");
+				if (file == NULL)
+				{
+					fprintf(stderr, "Error: abriendo: %s\n", file_in);
+					exit(255);
+				}
+				if (dup2(fileno(file), STDIN_FILENO) < 0)
+				{
+					fprintf(stderr, "Error: redireccionando entrada\n");
+					fclose(file);
+					exit(255);
+				}
+				fclose(file);
+			}
+
+			if (file_out)
+			{
+				FILE* file = fopen(file_out, "w");
+				if (file == NULL)
+				{
+					fprintf(stderr, "Error: abriendo: %s\n", file_out);
+					exit(255);
+				}
+				if (dup2(fileno(file), STDOUT_FILENO) < 0)
+				{
+					fprintf(stderr, "Error: redireccionando salida\n");
+					fclose(file);
+					exit(255);
+				}
+				fclose(file);
+			}
+
+			restore_terminal_signals();
+			execvp(args[0], args);
+			fprintf(stderr, "Error, command not found: %s\n", args[0]);
+			exit(255);
 		}
 
 		setpgid(pid_fork, pid_fork);
@@ -224,9 +261,9 @@ int main(void)
 
 			if (WIFSTOPPED(status))
 			{
-        block_SIGCHLD();
+        		block_SIGCHLD();
 				add_job(job_list, new_job(pid_fork, args[0], STOPPED));
-        unblock_SIGCHLD();
+        		unblock_SIGCHLD();
 
 				printf("Foreground pid: %d, command: %s, Suspended, info: %d\n", pid_wait, args[0], WSTOPSIG(status));
 			} else if (WIFEXITED(status)){
