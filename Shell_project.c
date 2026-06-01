@@ -21,33 +21,49 @@ To compile and run the program:
 
 job *job_list;
 
+int get_job_position(char *arg)
+{
+	if (arg == NULL)
+	{
+		return 1;
+	}
+
+	return atoi(arg);
+}
+
 void manejador(int s) 
 {
   job *job;
   int status;
   int pid_wait;
 
-  for (int i = 1; i <= list_size(job_list); i++) 
+  for (int i = list_size(job_list); i >= 1; i--) 
   {
     job = get_item_bypos(job_list, i);
-    pid_wait = waitpid(job->pgid, &status, WNOHANG | WUNTRACED);
+    if (job == NULL)
+    {
+      continue;
+    }
+    pid_wait = waitpid(job->pgid, &status, WNOHANG | WUNTRACED | WCONTINUED);
 
     if (pid_wait == job->pgid) 
     {
       if (WIFEXITED(status)) 
       {
-		printf("Background process %s (%d) Exited\n", job->command, job->pgid);
+		printf("Background pid: %d, command: %s, Exited, info: %d\n", job->pgid, job->command, WTERMSIG(status));
         delete_job(job_list, job);
-        i--;
       } else if (WIFSIGNALED(status)) 
       {
-		printf("Background process %s (%d) Signaled\n", job->command, job->pgid);
+		printf("Background pid: %d, command: %s, Signaled, info: %d\n", job->pgid, job->command, WTERMSIG(status));
         delete_job(job_list, job);
-        i--;
       } else if (WIFSTOPPED(status)) 
       {
         job->state = STOPPED;
-		printf("Background process %s (%d) Suspended\n", job->command, job->pgid);
+		printf("Background pid: %d, command: %s, Suspended, info: %d\n", job->pgid, job->command, WTERMSIG(status));
+      } else if (WIFCONTINUED(status))
+      {
+        job->state = BACKGROUND;
+		printf("Background pid: %d, command: %s, Continued, info: %d\n", job->pgid, job->command, WTERMSIG(status));
       }
     }
   }
@@ -104,6 +120,70 @@ int main(void)
 			continue;
 		}
 
+		if (strcmp(args[0], "fg") == 0)
+		{
+      int pos = get_job_position(args[1]);
+      job *item;
+      pid_t job_pid;
+      char *job_command;
+
+      block_SIGCHLD();
+      item = get_item_bypos(job_list, pos);
+      if (item == NULL)
+      {
+        unblock_SIGCHLD();
+        continue;
+      }
+      job_pid = item->pgid;
+      job_command = strdup(item->command);
+      delete_job(job_list, item);
+      unblock_SIGCHLD();
+
+      tcsetpgrp(STDIN_FILENO, job_pid);
+      killpg(job_pid, SIGCONT);
+      pid_wait = waitpid(job_pid, &status, WUNTRACED);
+      tcsetpgrp(STDIN_FILENO, getpgrp());
+
+      if (WIFSTOPPED(status))
+      {
+        block_SIGCHLD();
+        add_job(job_list, new_job(job_pid, job_command, STOPPED));
+        unblock_SIGCHLD();
+        printf("Foreground pid: %d, command: %s, Suspended, info: %d\n", job_pid, job_command, WSTOPSIG(status));
+      }
+      else if (WIFEXITED(status))
+      {
+        printf("Foreground pid: %d, command: %s, Exited, info: %d\n", job_pid, job_command, WEXITSTATUS(status));
+      }
+      else if (WIFSIGNALED(status))
+      {
+        printf("Foreground pid: %d, command: %s, Signaled, info: %d\n", job_pid, job_command, WTERMSIG(status));
+      }
+
+      free(job_command);
+			continue;
+		}
+
+		if (strcmp(args[0], "bg") == 0)
+		{
+			int pos = get_job_position(args[1]);
+			job *item;
+
+			block_SIGCHLD();
+			item = get_item_bypos(job_list, pos);
+			if (item == NULL)
+			{
+				unblock_SIGCHLD();
+				continue;
+			}
+			item->state = BACKGROUND;
+			unblock_SIGCHLD();
+
+			killpg(item->pgid, SIGCONT);
+			printf("Background job running... pid: %d, command: %s\n", item->pgid, item->command);
+			continue;
+		}
+
 		/* the steps are:
 			 (1) fork a child process using fork()
 			 (2) the child process will invoke execvp()
@@ -138,6 +218,7 @@ int main(void)
 		if (background == 0)
 		{
 			// foreground
+      		tcsetpgrp(STDIN_FILENO, pid_fork);
 			pid_wait = waitpid(pid_fork, &status, WUNTRACED);
 			tcsetpgrp(STDIN_FILENO, getpgrp());
 
