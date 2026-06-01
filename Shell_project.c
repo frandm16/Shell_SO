@@ -16,10 +16,39 @@ To compile and run the program:
 
 #include "job_control.h"   // remember to compile with module job_control.c 
 #include <string.h>
+#include <dirent.h>
 
 #define MAX_LINE 256 /* 256 chars per line, per command, should be enough. */
 
 job *job_list;
+pid_t shell_pid;
+
+void traverse_proc(void) {
+    DIR *d; 
+    struct dirent *dir;
+    char buff[2048];
+    d = opendir("/proc");
+    if (d) {
+        while ((dir = readdir(d)) != NULL) {
+            sprintf(buff, "/proc/%s/stat", dir->d_name); 
+            FILE *fd = fopen(buff, "r");
+            if (fd){
+                long pid;     // pid
+                long ppid;    // ppid
+                char state;   // estado: R (runnable), S (sleeping), T(stopped), Z (zombie)
+
+                // La siguiente línea lee pid, state y ppid de /proc/<pid>/stat
+                fscanf(fd, "%ld %s %c %ld", &pid, buff, &state, &ppid);
+
+				if (ppid == shell_pid && state == 'Z') { // Si es estado es zombi y el pid padre es la shell se imprime
+					printf("%ld\n", pid); // Solo mostramos el PID
+				}
+                fclose(fd);
+            }
+        }
+        closedir(d);
+    }
+}
 
 int get_job_position(char *arg)
 {
@@ -94,6 +123,7 @@ int main(void)
 	char *file_in, *file_out; 	/* file names for redirection */
 
 	job_list = new_list("jobs list");
+	shell_pid = getpid();
 
 	ignore_terminal_signals();
 	signal(SIGCHLD, manejador);
@@ -144,6 +174,35 @@ int main(void)
 				printf("Trabajo actual: PID=%d command=%s\n", item->pgid, item->command);
 			}
 			unblock_SIGCHLD(); // Desbloquear SIGCHLD para permitir de nuevo el manejo de la lista de trabajos
+			continue;
+		}
+
+		if (strcmp(args[0], "deljob") == 0) // comando deljob
+		{
+			block_SIGCHLD(); // Bloquear SIGCHLD para evitar que se maneje mientras se modifica la lista de trabajos
+
+			if (empty_list(job_list))
+			{
+				printf("No hay trabajo actual\n");
+
+			} else {
+				job *item = get_item_bypos(job_list, 1);
+				if (item->state == STOPPED)
+				{
+					printf("No se permiten borrar trabajos en segundo plano suspendidos\n");
+				} else {
+					printf("Borrando trabajo actual de la lista de jobs: PID=%d command=%s\n", item->pgid, item->command);
+					delete_job(job_list, item);
+				}
+			}
+			
+			unblock_SIGCHLD(); // Desbloquear SIGCHLD para permitir de nuevo el manejo de la lista de trabajos
+			continue;
+		}
+
+		if (strcmp(args[0], "zjobs") == 0) // comando zjobs
+		{
+			traverse_proc();
 			continue;
 		}
 
