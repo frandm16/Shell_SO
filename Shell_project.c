@@ -33,6 +33,16 @@ int get_job_position(char *arg)
 
 void manejador(int s) 
 {
+  if (s == 1)
+  {
+    FILE *fp = fopen("hup.txt","a"); // abre un fichero en modo 'append'
+	if (fp) { 
+		fprintf(fp, "SIGHUP recibido.\n"); //escribe en el fichero
+		fclose(fp);
+	}
+    return;
+  }
+
   job *job;
   int status;
   int pid_wait;
@@ -86,7 +96,8 @@ int main(void)
 	job_list = new_list("jobs list");
 
 	ignore_terminal_signals();
-  signal(SIGCHLD, manejador);
+	signal(SIGCHLD, manejador);
+	signal(SIGHUP, manejador);
 
 	while (1)   /* Program terminates normally inside get_command() after ^D is typed*/
 	{   		
