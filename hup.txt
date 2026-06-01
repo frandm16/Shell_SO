@@ -1,0 +1,2 @@
+SIGHUP recibido.
+SIGHUP recibido.

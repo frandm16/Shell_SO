@@ -23,6 +23,7 @@ To compile and run the program:
 job *job_list;
 pid_t shell_pid;
 
+// Recorre /proc para buscar zombis hijos del shell
 void traverse_proc(void) {
     DIR *d; 
     struct dirent *dir;
@@ -50,6 +51,7 @@ void traverse_proc(void) {
     }
 }
 
+// Obtiene la posicion del job o devuelve 1 por defecto
 int get_job_position(char *arg)
 {
 	if (arg == NULL)
@@ -60,6 +62,7 @@ int get_job_position(char *arg)
 	return atoi(arg);
 }
 
+// Maneja SIGHUP y SIGCHLD
 void manejador(int s) 
 {
   if (s == 1)
@@ -87,6 +90,7 @@ void manejador(int s)
 
     if (pid_wait == job->pgid) 
     {
+      // Si cambia de estado, informar y actualizar la lista
       if (WIFEXITED(status)) 
       {
 		printf("Background pid: %d, command: %s, Exited, info: %d\n", job->pgid, job->command, WTERMSIG(status));
@@ -122,19 +126,19 @@ int main(void)
 	int status;             	/* status returned by wait */
 	char *file_in, *file_out; 	/* file names for redirection */
 
-	job_list = new_list("jobs list");
-	shell_pid = getpid();
+	job_list = new_list("jobs list"); // Crear la lista de trabajos
+	shell_pid = getpid(); // Guardar el pid del shell
 
-	ignore_terminal_signals();
-	signal(SIGCHLD, manejador);
-	signal(SIGHUP, manejador);
+	ignore_terminal_signals(); // Ignorar senales de terminal en el shell
+	signal(SIGCHLD, manejador); // Registrar manejador para trabajos hijos
+	signal(SIGHUP, manejador); // Registrar manejador para SIGHUP
 
 	while (1)   /* Program terminates normally inside get_command() after ^D is typed*/
 	{   		
 		printf("COMMAND->");
 		fflush(stdout);
 		get_command(inputBuffer, MAX_LINE, args, &background);  /* get next command */
-		parse_redirections(args, &file_in, &file_out);
+		parse_redirections(args, &file_in, &file_out); // Detectar redirecciones simples
 		
 		if(args[0]==NULL) continue;   // if empty command
 
@@ -225,10 +229,10 @@ int main(void)
 			delete_job(job_list, item);
 			unblock_SIGCHLD(); // Desbloquear SIGCHLD para permitir de nuevo el manejo de la lista de trabajos
 
-			tcsetpgrp(STDIN_FILENO, job_pid);
-			killpg(job_pid, SIGCONT);
-			pid_wait = waitpid(job_pid, &status, WUNTRACED);
-			tcsetpgrp(STDIN_FILENO, getpgrp());
+			tcsetpgrp(STDIN_FILENO, job_pid); // Dar el terminal al job
+			killpg(job_pid, SIGCONT); // Reanudar el grupo de procesos
+			pid_wait = waitpid(job_pid, &status, WUNTRACED); // Esperar al job en foreground
+			tcsetpgrp(STDIN_FILENO, getpgrp()); // Recuperar el terminal para el shell
 
 			if (WIFSTOPPED(status))
 			{
@@ -266,7 +270,7 @@ int main(void)
 			item->state = BACKGROUND;
 			unblock_SIGCHLD(); // Desbloquear SIGCHLD para permitir de nuevo el manejo de la lista de trabajos
 
-			killpg(item->pgid, SIGCONT);
+			killpg(item->pgid, SIGCONT); // Reanudar el job en background
 			printf("Background job running... pid: %d, command: %s\n", item->pgid, item->command);
 			continue;
 		}
@@ -294,7 +298,7 @@ int main(void)
 		if (pid_fork == 0) // child process
 		{
 			
-			setpgid(0, getpid());
+			setpgid(0, getpid()); // Crear un nuevo grupo de procesos para el hijo
 
 			if (file_in)
 			{
@@ -330,22 +334,22 @@ int main(void)
 				fclose(file);
 			}
 
-			restore_terminal_signals();
-			execvp(args[0], args);
+			restore_terminal_signals(); // Restaurar senales por defecto en el hijo
+			execvp(args[0], args); // Ejecutar el comando externo
 			fprintf(stderr, "Error, command not found: %s\n", args[0]);
 			exit(255);
 		}
 
-		setpgid(pid_fork, pid_fork);
+		setpgid(pid_fork, pid_fork); // Asegurar el grupo de procesos del hijo
 
 		// (3) if background == 0, the parent will wait, otherwise continue 
 		// (4) Shell shows a status message for processed command 
 		if (background == 0)
 		{
 			// foreground
-      		tcsetpgrp(STDIN_FILENO, pid_fork);
-			pid_wait = waitpid(pid_fork, &status, WUNTRACED);
-			tcsetpgrp(STDIN_FILENO, getpgrp());
+      		tcsetpgrp(STDIN_FILENO, pid_fork); // Dar el terminal al hijo en foreground
+			pid_wait = waitpid(pid_fork, &status, WUNTRACED); // Esperar a que termine o se suspenda
+			tcsetpgrp(STDIN_FILENO, getpgrp()); // Recuperar el terminal para el shell
 
 			if (WIFSTOPPED(status))
 			{
@@ -365,7 +369,7 @@ int main(void)
 			add_job(job_list, new_job(pid_fork, args[0], BACKGROUND));
       		unblock_SIGCHLD(); // Desbloquear SIGCHLD para permitir de nuevo el manejo de la lista de trabajos
 
-			printf("Background job running... pid: %d, command: %s\n", pid_fork, args[0]);
+			printf("Background job running... pid: %d, command: %s\n", pid_fork, args[0]); // Informar del nuevo job
 		}
 
   } // end while
