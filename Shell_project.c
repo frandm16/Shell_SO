@@ -125,6 +125,7 @@ int main(void)
 	int pid_fork, pid_wait; 	/* pid for created and waited process */
 	int status;             	/* status returned by wait */
 	char *file_in, *file_out; 	/* file names for redirection */
+	int append;             	/* indica si la salida usa >> */
 
 	job_list = new_list("jobs list"); // Crear la lista de trabajos
 	shell_pid = getpid(); // Guardar el pid del shell
@@ -138,6 +139,17 @@ int main(void)
 		printf("COMMAND->");
 		fflush(stdout);
 		get_command(inputBuffer, MAX_LINE, args, &background);  /* get next command */
+
+		append = 0; // Reiniciar el modo de redireccion en cada comando
+		for (int i = 0; args[i] != NULL; i++)
+		{
+			if (strcmp(args[i], ">>") == 0)
+			{
+				args[i] = ">"; // Sustituir >> por > para reutilizar parse_redirections
+				append = 1; // Marcar que la salida debe anadirse al final del fichero
+			}
+		}
+
 		parse_redirections(args, &file_in, &file_out); // Detectar redirecciones simples
 		
 		if(args[0]==NULL) continue;   // if empty command
@@ -334,12 +346,22 @@ int main(void)
 
 					if (file_out)
 					{
-						FILE* file = fopen(file_out, "w"); // Abrir la redireccion de salida
+						FILE* file;
+						if (append)
+						{
+							file = fopen(file_out, "a"); // Abrir la salida en modo append
+						}
+						else
+						{
+							file = fopen(file_out, "w"); // Abrir la salida en modo escritura
+						}
+
 						if (file == NULL)
 						{
 							fprintf(stderr, "Error: abriendo: %s\n", file_out);
 							exit(255);
 						}
+						
 						if (dup2(fileno(file), STDOUT_FILENO) < 0)
 						{
 							fprintf(stderr, "Error: redireccionando salida\n");
@@ -409,7 +431,15 @@ int main(void)
 
 			if (file_out)
 			{
-				FILE* file = fopen(file_out, "w"); // Abrir la salida redirigida
+				FILE* file;
+				if (append)
+				{
+					file = fopen(file_out, "a"); // Abrir la salida en modo append
+				}
+				else
+				{
+					file = fopen(file_out, "w"); // Abrir la salida redirigida
+				}
 				if (file == NULL)
 				{
 					fprintf(stderr, "Error: abriendo: %s\n", file_out);
