@@ -193,6 +193,26 @@ int main(void)
 			continue;
 		}
 
+		if (strcmp(args[0], "exit") == 0) // comando exit
+		{
+			int ret;
+
+			if (args[1] == NULL)
+			{
+				ret = 0; // Sin argumento, salir con 0
+			}
+			else
+			{
+				ret = atoi(args[1]); // Convertir el primer argumento a entero
+				if (ret == 0 && strcmp(args[1], "0") != 0)
+				{
+					ret = 0; // Si no es entero valido, usar 0
+				}
+			}
+
+			exit(ret);
+		}
+
 		if (strcmp(args[0], "deljob") == 0) // comando deljob
 		{
 			block_SIGCHLD(); // Bloquear SIGCHLD para evitar que se maneje mientras se modifica la lista de trabajos
@@ -361,7 +381,7 @@ int main(void)
 							fprintf(stderr, "Error: abriendo: %s\n", file_out);
 							exit(255);
 						}
-						
+
 						if (dup2(fileno(file), STDOUT_FILENO) < 0)
 						{
 							fprintf(stderr, "Error: redireccionando salida\n");
