@@ -127,15 +127,15 @@ int main(void)
 
 		if (strcmp(args[0], "jobs") == 0) // comando jobs
 		{
-      		block_SIGCHLD();
+      		block_SIGCHLD(); // Bloquear SIGCHLD para evitar que se maneje mientras se accede a la lista de trabajos
 			print_job_list(job_list);
-      		unblock_SIGCHLD();
+      		unblock_SIGCHLD(); // Desbloquear SIGCHLD para permitir de nuevo el manejo de la lista de trabajos
 			continue;
 		}
 
 		if (strcmp(args[0], "currjob") == 0) // comando currjob
 		{
-			block_SIGCHLD();
+			block_SIGCHLD(); // Bloquear SIGCHLD para evitar que se maneje mientras se accede a la lista de trabajos
 			if (empty_list(job_list)) // Si job_list esta vacia
 			{
 				printf("No hay trabajo actual\n");
@@ -143,51 +143,52 @@ int main(void)
 				job *item = get_item_bypos(job_list, 1); // Obtener el primer trabajo
 				printf("Trabajo actual: PID=%d command=%s\n", item->pgid, item->command);
 			}
-			unblock_SIGCHLD();
+			unblock_SIGCHLD(); // Desbloquear SIGCHLD para permitir de nuevo el manejo de la lista de trabajos
 			continue;
 		}
 
 		if (strcmp(args[0], "fg") == 0) // comando fg
 		{
-      int pos = get_job_position(args[1]);
-      job *item;
-      pid_t job_pid;
-      char *job_command;
+			int pos = get_job_position(args[1]);
+			job *item;
+			pid_t job_pid;
+			char *job_command;
 
-      block_SIGCHLD();
-      item = get_item_bypos(job_list, pos);
-      if (item == NULL)
-      {
-        unblock_SIGCHLD();
-        continue;
-      }
-      job_pid = item->pgid;
-      job_command = strdup(item->command);
-      delete_job(job_list, item);
-      unblock_SIGCHLD();
+			block_SIGCHLD(); // Bloquear SIGCHLD para evitar que se maneje mientras se modifica la lista de trabajos
+			item = get_item_bypos(job_list, pos);
+			if (item == NULL)
+			{
+				unblock_SIGCHLD(); // Desbloquear SIGCHLD para permitir de nuevo el manejo de la lista de trabajos
+				continue;
+			}
+			job_pid = item->pgid;
+			job_command = strdup(item->command);
+			delete_job(job_list, item);
+			unblock_SIGCHLD(); // Desbloquear SIGCHLD para permitir de nuevo el manejo de la lista de trabajos
 
-      tcsetpgrp(STDIN_FILENO, job_pid);
-      killpg(job_pid, SIGCONT);
-      pid_wait = waitpid(job_pid, &status, WUNTRACED);
-      tcsetpgrp(STDIN_FILENO, getpgrp());
+			tcsetpgrp(STDIN_FILENO, job_pid);
+			killpg(job_pid, SIGCONT);
+			pid_wait = waitpid(job_pid, &status, WUNTRACED);
+			tcsetpgrp(STDIN_FILENO, getpgrp());
 
-      if (WIFSTOPPED(status))
-      {
-        block_SIGCHLD();
-        add_job(job_list, new_job(job_pid, job_command, STOPPED));
-        unblock_SIGCHLD();
-        printf("Foreground pid: %d, command: %s, Suspended, info: %d\n", job_pid, job_command, WSTOPSIG(status));
-      }
-      else if (WIFEXITED(status))
-      {
-        printf("Foreground pid: %d, command: %s, Exited, info: %d\n", job_pid, job_command, WEXITSTATUS(status));
-      }
-      else if (WIFSIGNALED(status))
-      {
-        printf("Foreground pid: %d, command: %s, Signaled, info: %d\n", job_pid, job_command, WTERMSIG(status));
-      }
+			if (WIFSTOPPED(status))
+			{
+				block_SIGCHLD(); // Bloquear SIGCHLD para evitar que se maneje mientras se modifica la lista de trabajos
+				add_job(job_list, new_job(job_pid, job_command, STOPPED));
+				unblock_SIGCHLD(); // Desbloquear SIGCHLD para permitir de nuevo el manejo de la lista de trabajos
 
-      free(job_command);
+				printf("Foreground pid: %d, command: %s, Suspended, info: %d\n", job_pid, job_command, WSTOPSIG(status));
+			}
+			else if (WIFEXITED(status))
+			{
+				printf("Foreground pid: %d, command: %s, Exited, info: %d\n", job_pid, job_command, WEXITSTATUS(status));
+			}
+			else if (WIFSIGNALED(status))
+			{
+				printf("Foreground pid: %d, command: %s, Signaled, info: %d\n", job_pid, job_command, WTERMSIG(status));
+			}
+
+			free(job_command);
 			continue;
 		}
 
@@ -196,15 +197,15 @@ int main(void)
 			int pos = get_job_position(args[1]);
 			job *item;
 
-			block_SIGCHLD();
+			block_SIGCHLD(); // Bloquear SIGCHLD para evitar que se maneje mientras se modifica la lista de trabajos
 			item = get_item_bypos(job_list, pos);
 			if (item == NULL)
 			{
-				unblock_SIGCHLD();
+				unblock_SIGCHLD(); // Desbloquear SIGCHLD para permitir de nuevo el manejo de la lista de trabajos
 				continue;
 			}
 			item->state = BACKGROUND;
-			unblock_SIGCHLD();
+			unblock_SIGCHLD(); // Desbloquear SIGCHLD para permitir de nuevo el manejo de la lista de trabajos
 
 			killpg(item->pgid, SIGCONT);
 			printf("Background job running... pid: %d, command: %s\n", item->pgid, item->command);
@@ -289,9 +290,9 @@ int main(void)
 
 			if (WIFSTOPPED(status))
 			{
-        		block_SIGCHLD();
+        		block_SIGCHLD(); // Bloquear SIGCHLD para evitar que se maneje mientras se modifica la lista de trabajos
 				add_job(job_list, new_job(pid_fork, args[0], STOPPED));
-        		unblock_SIGCHLD();
+        		unblock_SIGCHLD(); // Desbloquear SIGCHLD para permitir de nuevo el manejo de la lista de trabajos
 
 				printf("Foreground pid: %d, command: %s, Suspended, info: %d\n", pid_wait, args[0], WSTOPSIG(status));
 			} else if (WIFEXITED(status)){
@@ -301,9 +302,9 @@ int main(void)
 			}
 		} else {
 			//background
-      block_SIGCHLD();
+      		block_SIGCHLD(); // Bloquear SIGCHLD para evitar que se maneje mientras se modifica la lista de trabajos
 			add_job(job_list, new_job(pid_fork, args[0], BACKGROUND));
-      unblock_SIGCHLD();
+      		unblock_SIGCHLD(); // Desbloquear SIGCHLD para permitir de nuevo el manejo de la lista de trabajos
 
 			printf("Background job running... pid: %d, command: %s\n", pid_fork, args[0]);
 		}
