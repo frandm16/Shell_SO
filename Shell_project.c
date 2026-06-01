@@ -83,7 +83,6 @@ int main(void)
 	int status;             	/* status returned by wait */
 	char *file_in, *file_out; 	/* file names for redirection */
 
-	const char *home_dir = getenv("HOME");
 	job_list = new_list("jobs list");
 
 	ignore_terminal_signals();
@@ -98,11 +97,13 @@ int main(void)
 		
 		if(args[0]==NULL) continue;   // if empty command
 
+		// ---------------------------------------------------------------------------- COMANDOS INTERNOS ----------------------------------------------------------------------------
+
 		if (strcmp(args[0], "cd") == 0) // comando cd
 		{
 			if (args[1] == NULL || strcmp(args[1], "~") == 0)
 			{
-				chdir(home_dir);
+				chdir(getenv("HOME"));
 				continue;
 			}
 
@@ -115,13 +116,13 @@ int main(void)
 
 		if (strcmp(args[0], "jobs") == 0) // comando jobs
 		{
-      block_SIGCHLD();
+      		block_SIGCHLD();
 			print_job_list(job_list);
-      unblock_SIGCHLD();
+      		unblock_SIGCHLD();
 			continue;
 		}
 
-		if (strcmp(args[0], "fg") == 0)
+		if (strcmp(args[0], "fg") == 0) // comando fg
 		{
       int pos = get_job_position(args[1]);
       job *item;
@@ -165,7 +166,7 @@ int main(void)
 			continue;
 		}
 
-		if (strcmp(args[0], "bg") == 0)
+		if (strcmp(args[0], "bg") == 0) // comando bg
 		{
 			int pos = get_job_position(args[1]);
 			job *item;
@@ -184,6 +185,8 @@ int main(void)
 			printf("Background job running... pid: %d, command: %s\n", item->pgid, item->command);
 			continue;
 		}
+
+		// ---------------------------------------------------------------------------- COMANDOS EXTERNOS ----------------------------------------------------------------------------
 
 		/* the steps are:
 			 (1) fork a child process using fork()
