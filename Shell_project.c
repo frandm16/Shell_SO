@@ -133,6 +133,20 @@ int main(void)
 			continue;
 		}
 
+		if (strcmp(args[0], "currjob") == 0) // comando currjob
+		{
+			block_SIGCHLD();
+			if (empty_list(job_list)) // Si job_list esta vacia
+			{
+				printf("No hay trabajo actual\n");
+			} else {
+				job *item = get_item_bypos(job_list, 1); // Obtener el primer trabajo
+				printf("Trabajo actual: PID=%d command=%s\n", item->pgid, item->command);
+			}
+			unblock_SIGCHLD();
+			continue;
+		}
+
 		if (strcmp(args[0], "fg") == 0) // comando fg
 		{
       int pos = get_job_position(args[1]);
